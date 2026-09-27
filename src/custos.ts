@@ -89,7 +89,8 @@ export function rules(claims: string[], rec: Recording): Verdict[] {
     const quoted = [...c.matchAll(/['"“]([^'"”]+)['"”]/g)].map((m) => m[1]);
     const hit = rec.requests.find((r) => r.resp && [...quoted, ...nums].every((x) => new RegExp(`(?<!\\d)${x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?!\\d)`).test(r.resp)));
     if ((quoted.length || nums.length) && hit) return { claim: c, verdict: "CONFIRMED", request_index: hit.i, quote: [...quoted, ...nums][0], reason: "found in a recorded response" };
-    if (nums.length && !nums.every((n) => ev.includes(n))) return { claim: c, verdict: "CONTRADICTED", request_index: rec.end, quote: null, reason: `no recorded response contains ${nums[0]}` };
+    const miss = nums.find((n) => !new RegExp(`(?<!\\d)${n.replaceAll(".", "\\.")}(?!\\d)`).test(ev)); // digit-bounded, like the CONFIRMED check
+    if (miss) return { claim: c, verdict: "CONTRADICTED", request_index: rec.end, quote: null, reason: `no recorded response contains ${miss}` };
     return { claim: c, verdict: "UNPROVEN", request_index: null, quote: null, reason: "nothing in the recording supports or refutes this" };
   });
 }

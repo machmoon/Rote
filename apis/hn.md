@@ -4,15 +4,15 @@ type: learned-api
 tags: [learned-api, search, hn]
 site: https://hn.algolia.com/
 method: POST
-learned: 2026-09-27 21:14
-driver: typer
+learned: 2026-09-27 21:16
+driver: claude
 ---
 
 # hn search API (hn.algolia.com)
 
 Hacker News Search powered by Algolia
 
-Search hn.algolia.com by keyword without a browser. Learned by a scripted browser in one run (24.3 s, 16 requests); a call takes about a second. Replay verified 2026-09-27 21:15: a different query returns different results. Status: custos: 0/1 of the agent's claims confirmed against the recording.
+Search hn.algolia.com by keyword without a browser. Learned by a Claude Code agent in one run (35 s, 11 requests); a call takes about a second. Replay verified 2026-09-27 21:16: a different query returns different results. Status: custos: 32/34 of the agent's claims confirmed against the recording.
 
 ## Call
 
@@ -20,7 +20,7 @@ Search hn.algolia.com by keyword without a browser. Learned by a scripted browse
 pilot call hn "<query>"
 ```
 
-Underlying request: `POST https://uj5wyc0l7x-2.algolianet.com/1/indexes/Item_dev/query` with the query templated as `{query}`.
+Underlying request: `POST https://uj5wyc0l7x-dsn.algolia.net/1/indexes/Item_dev/query` with the query templated as `{query}`.
 
 ## Example response
 

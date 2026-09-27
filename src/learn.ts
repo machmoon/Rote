@@ -100,7 +100,7 @@ export async function learn(name: string, url: string, query: string, opts: { dr
       if (!browser) throw fail("INTERNAL_ERROR", "Chrome did not open a debugging port");
       const ctx = browser.contexts()[0];
       recorder(ctx, t0, reqs, emit);
-      await (ctx.pages()[0] ?? (await ctx.newPage())).goto(url, { waitUntil: "domcontentloaded" });
+      await (ctx.pages()[0] ?? (await ctx.newPage())).goto(url, { waitUntil: "commit", timeout: 60000 });
       ({ agent, summary } = await driveClaude(url, query, ctx, t0, dir, emit));
       await browser.close();
     } finally {
@@ -113,7 +113,7 @@ export async function learn(name: string, url: string, query: string, opts: { dr
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 760 }, locale: "en-US" });
     recorder(ctx, t0, reqs, emit);
     const page = await ctx.newPage();
-    await page.goto(url, { waitUntil: "domcontentloaded" });
+    await page.goto(url, { waitUntil: "commit", timeout: 60000 });
     await page.waitForTimeout(2000);
     const box = page.locator("input[type=search]:visible, input[name*=search i]:visible, input[placeholder*=search i]:visible, input[type=text]:visible").first();
     const step = (tool: string, arg: string) => { const s = { at_ms: Math.round(performance.now() - t0), tool, arg }; agent.push(s); emit({ type: "agent", step: s }); };
