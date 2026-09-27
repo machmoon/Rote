@@ -86,13 +86,15 @@ export function qm(out = join(ROOT, "qm", "sandbox", "tools", "pilot")) {
 }
 
 // Self-contained replay for the QM sandbox (node is in its image): no deps, no recordings, plain text out.
-const CALL_MJS = `import { readFileSync, readdirSync } from "node:fs";
+const CALL_MJS = `import { existsSync, readFileSync, readdirSync } from "node:fs";
 const dir = "/usr/local/lib/pilot/apis", [cmd, name, ...q] = process.argv.slice(2);
-const fill = (t, s) => t.replaceAll("{query:url}", encodeURIComponent(s)).replaceAll("{query:raw}", s);
+const form = (t) => t.replaceAll("={query:raw}", "={query:url}"), fill = (t, s, json) => form(t).replaceAll("{query:url}", () => encodeURIComponent(s)).replaceAll("{query:raw}", () => json ? JSON.stringify(s).slice(1, -1) : s);
 if (cmd === "list" || !cmd) { for (const f of readdirSync(dir)) { const a = JSON.parse(readFileSync(dir + "/" + f)); console.log(a.name.padEnd(10), a.about || a.site); } process.exit(0); }
 if (cmd !== "call" || !name) { console.log('usage: pilot call <site> "<question>" | pilot list'); process.exit(1); }
+if (!/^[\\w-]+$/.test(name) || !existsSync(dir + "/" + name + ".json")) { console.log("No learned site called " + JSON.stringify(name) + ". Try: pilot list"); process.exit(1); }
 const a = JSON.parse(readFileSync(dir + "/" + name + ".json", "utf8")), query = q.join(" "), t = Date.now();
-const r = await fetch(fill(a.url, query), { method: a.method, headers: a.headers, body: a.body ? fill(a.body, JSON.stringify(query).slice(1, -1)) : undefined });
+const r = await fetch(fill(a.url, query), { method: a.method, headers: a.headers, body: a.body ? fill(a.body, query, true) : undefined });
+if (!r.ok) { console.log(name + " answered HTTP " + r.status + "; the saved request may be stale."); process.exit(1); }
 const data = await r.json(), out = [], seen = new Set();
 const text = (v) => typeof v === "string" ? v : v && typeof v === "object" ? (v.simpleText ?? (v.runs ?? []).map((x) => x.text ?? "").join("")) : "";
 const walk = (o) => { if (out.length >= 5 || !o || typeof o !== "object") return; if (Array.isArray(o)) return o.forEach(walk);

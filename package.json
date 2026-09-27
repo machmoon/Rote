@@ -4,12 +4,20 @@
   "private": true,
   "type": "module",
   "description": "Learn a website once with a real agent, prove what it did, call it forever.",
-  "bin": { "pilot": "bin/pilot" },
+  "bin": {
+    "pilot": "bin/pilot"
+  },
   "scripts": {
     "pilot": "node src/cli.ts",
     "console": "node src/cli.ts console",
     "test": "node --test test/*.test.ts"
   },
-  "engines": { "node": ">=24" },
-  "dependencies": { "playwright": "1.63.0" }
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.1",
+    "playwright": "1.63.0",
+    "zod": "^4.6.5"
+  }
 }

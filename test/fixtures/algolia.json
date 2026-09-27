@@ -1,0 +1,7 @@
+{"hits":[
+ {"title":"Claude Code is generally available","url":"https://example.com/a","author":"pg","points":2845,"num_comments":900,"objectID":"41000001","_highlightResult":{"title":{"value":"<em>Claude</em> Code"}}},
+ {"title":"Show HN: GBrain, a second brain for agents","url":"https://example.com/b","points":512,"objectID":"41000002"},
+ {"title":"Ask HN: What are you using Claude Code for?","url":null,"points":0,"objectID":"41000003"},
+ {"title":"Claude Code is generally available","points":1,"objectID":"41000004"},
+ {"title":"ab","points":3,"objectID":"41000005"}
+],"nbHits":1234,"page":0,"hitsPerPage":30}

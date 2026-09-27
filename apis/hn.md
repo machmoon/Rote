@@ -12,7 +12,7 @@ driver: claude
 
 Hacker News Search powered by Algolia
 
-Search hn.algolia.com by keyword without a browser. Learned by a Claude Code agent in one run (35 s, 11 requests); a call takes about a second. Replay verified 2026-09-27 21:16: a different query returns different results. Status: custos: 32/34 of the agent's claims confirmed against the recording.
+Search hn.algolia.com by keyword without a browser. Learned by a Claude Code agent in one run (35 s, 11 requests); a call takes about a second. Replay verified 2026-09-27 21:16: a different query returns different results. Status: custos: 31/37 of the agent's claims confirmed against the recording.
 
 ## Call
 

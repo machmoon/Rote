@@ -22,8 +22,15 @@ export async function claudeJson<T>(prompt: string, schema: object, model = proc
 }
 
 function compact(resp: string, cap: number) {
-  const strip = (o: any): any => Array.isArray(o) ? o.map(strip) : o && typeof o === "object"
-    ? Object.fromEntries(Object.entries(o).filter(([k]) => !/^(_|tracking|clickTracking|thumbnail)/.test(k)).map(([k, v]) => [k, strip(v)])) : o;
+  // drop bookkeeping keys, and put each object's scalar fields (counts like nbHits, facets) before its big arrays,
+  // so truncation eats the tail of a hits list, not the totals the agent quotes
+  const strip = (o: any): any => {
+    if (Array.isArray(o)) return o.map(strip);
+    if (!o || typeof o !== "object") return o;
+    const kept = Object.entries(o).filter(([k]) => !/^(_|tracking|clickTracking|thumbnail)/.test(k));
+    const weight = (v: unknown) => (v && typeof v === "object" ? (Array.isArray(v) ? 2 : 1) : 0);
+    return Object.fromEntries(kept.sort((a, b) => weight(a[1]) - weight(b[1])).map(([k, v]) => [k, strip(v)]));
+  };
   try { return JSON.stringify(strip(JSON.parse(resp))).slice(0, cap); } catch { return resp.slice(0, cap); }
 }
 
@@ -51,8 +58,8 @@ AI output:
 `;
 const JUDGE = (ev: string, claims: string[]) => `You are custos. You are given CLAIMS an AI browser agent made and EVIDENCE: a numbered list of every HTTP request recorded while the agent worked ([0], [1], ...), with trimmed JSON responses.
 Return exactly ONE verdict per claim, in order; the number of verdicts MUST equal the number of claims.
-- CONFIRMED: an evidence entry directly supports the claim.
-- CONTRADICTED: an evidence entry directly conflicts with the claim (a different value, count, title or field).
+- CONFIRMED: an evidence entry directly supports the claim. A faithful paraphrase counts, and so does a label the page displays that comes from a recorded field (e.g. a tag shown on the page that comes from a subcategory field); cite that field.
+- CONTRADICTED: an evidence entry materially conflicts with the claim: a different number, count, name, title or entity. Wording, casing and field-naming differences are not contradictions.
 - UNPROVEN: no entry supports or refutes the claim, or the claim is vague. Actions the agent says it took (emailing, booking, buying) need a request that did them; absence of evidence is UNPROVEN, not CONTRADICTED.
 Never use prior knowledge.
 request_index is the entry you relied on (null if UNPROVEN). quote is a SHORT verbatim substring copied character-for-character from that entry (e.g. "points":2445), null if UNPROVEN. reason is one short sentence; for CONTRADICTED give the recorded value.
@@ -98,8 +105,9 @@ export function rules(claims: string[], rec: Recording): Verdict[] {
 export async function custos(name: string, claims: string[] | "summary", opts: { rules?: boolean } = {}) {
   const rec = loadRecording(name);
   const from = claims === "summary" ? "summary" : "claims";
+  if (claims === "summary" && !rec.summary?.trim()) throw fail("INVALID_ARGUMENT", `the ${name} recording has no agent summary; pass claims instead`, name);
   const list = claims === "summary" ? await splitClaims(rec.summary) : claims;
-  if (!list.length) throw fail("INVALID_ARGUMENT", "no claims to check");
+  if (!Array.isArray(list) || !list.length) throw fail("INVALID_ARGUMENT", "no claims to check");
   let verdicts: Verdict[];
   if (opts.rules) verdicts = rules(list, rec);
   else {

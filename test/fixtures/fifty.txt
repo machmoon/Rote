@@ -1,0 +1,50 @@
+python
+rust
+javascript
+typescript
+golang
+kubernetes
+docker
+postgres
+sqlite
+redis
+machine learning
+neural networks
+large language models
+open source
+startups
+y combinator
+venture capital
+remote work
+hiring
+interviews
+linux
+macos
+windows
+android
+iphone
+web assembly
+compilers
+databases
+distributed systems
+cryptography
+security
+privacy
+browsers
+firefox
+chrome
+email
+calendar
+spreadsheets
+robotics
+electric cars
+batteries
+solar power
+space
+rockets
+climate
+biology
+physics
+mathematics
+chess
+music

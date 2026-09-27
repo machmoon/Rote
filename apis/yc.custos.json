@@ -1,0 +1,479 @@
+{
+ "name": "yc",
+ "judged_at": "2026-09-27 14:26",
+ "claims_from": "summary",
+ "judge": "llm",
+ "requests": 17,
+ "verdicts": [
+  {
+   "claim": "A search for \"dental\" was performed on YC's Startup Directory.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"query\":\"dental\"",
+   "reason": "The recorded Algolia query params show query=dental against the YC company index.",
+   "grounded": true
+  },
+  {
+   "claim": "The search for \"dental\" on YC's Startup Directory returned 162 companies.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"nbHits\":162",
+   "reason": "nbHits for the dental query is 162.",
+   "grounded": true
+  },
+  {
+   "claim": "The search results page was showing 40 companies.",
+   "verdict": "CONTRADICTED",
+   "request_index": 12,
+   "quote": "\"hitsPerPage\":1000",
+   "reason": "The request used hitsPerPage=1000, not 40, for the dental query.",
+   "grounded": true
+  },
+  {
+   "claim": "The 1st result was Alara.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"name\":\"Alara\"",
+   "reason": "Alara is the first hit in the results array.",
+   "grounded": true
+  },
+  {
+   "claim": "Alara's description is \"Procurement Platform for Dental Offices\".",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"one_liner\":\"Procurement Platform for Dental Offices\"",
+   "reason": "Matches Alara's one_liner field exactly.",
+   "grounded": true
+  },
+  {
+   "claim": "Alara's batch is Summer 2025.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"batch\":\"Summer 2025\"",
+   "reason": "Matches Alara's recorded batch.",
+   "grounded": true
+  },
+  {
+   "claim": "Alara's industry is B2B.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"industry\":\"B2B\"",
+   "reason": "Matches Alara's recorded industry.",
+   "grounded": true
+  },
+  {
+   "claim": "The 2nd result was Rinse.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"name\":\"Rinse\"",
+   "reason": "Rinse is the second hit in the results array.",
+   "grounded": true
+  },
+  {
+   "claim": "Rinse is located in San Francisco.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"all_locations\":\"San Francisco, CA, USA\"",
+   "reason": "Matches Rinse's recorded location.",
+   "grounded": true
+  },
+  {
+   "claim": "Rinse's description is \"Building the One Medical for dental\".",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "We're building the One Medical for dental",
+   "reason": "Faithful paraphrase of Rinse's one_liner.",
+   "grounded": true
+  },
+  {
+   "claim": "Rinse's batch is Summer 2021.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"batch\":\"Summer 2021\"",
+   "reason": "Matches Rinse's recorded batch.",
+   "grounded": true
+  },
+  {
+   "claim": "Rinse's industry is Healthcare.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"industry\":\"Healthcare\"",
+   "reason": "Matches Rinse's recorded industry.",
+   "grounded": true
+  },
+  {
+   "claim": "The 3rd result was Dodo.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"name\":\"Dodo\"",
+   "reason": "Dodo is the third hit in the results array.",
+   "grounded": true
+  },
+  {
+   "claim": "Dodo is located in San Francisco.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"all_locations\":\"San Francisco, CA, USA\"",
+   "reason": "Matches Dodo's recorded location.",
+   "grounded": true
+  },
+  {
+   "claim": "Dodo's description is \"AI agents that handle communications for clinics\".",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"one_liner\":\"AI agents that handle communications for clinics\"",
+   "reason": "Matches Dodo's one_liner exactly.",
+   "grounded": true
+  },
+  {
+   "claim": "Dodo's batch is Summer 2024.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"batch\":\"Summer 2024\"",
+   "reason": "Matches Dodo's recorded batch.",
+   "grounded": true
+  },
+  {
+   "claim": "Dodo's industry is Healthcare IT.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"subindustry\":\"Healthcare -> Healthcare IT\"",
+   "reason": "Dodo's subindustry field is Healthcare IT.",
+   "grounded": true
+  },
+  {
+   "claim": "The 4th result was onederful.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"name\":\"onederful\"",
+   "reason": "onederful is the fourth hit in the results array.",
+   "grounded": true
+  },
+  {
+   "claim": "onederful is located in San Francisco.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"all_locations\":\"San Francisco, CA, USA; Remote\"",
+   "reason": "Matches onederful's recorded location.",
+   "grounded": true
+  },
+  {
+   "claim": "onederful's description is \"Dental Insurance API\".",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"one_liner\":\"Dental Insurance API\"",
+   "reason": "Matches onederful's one_liner exactly.",
+   "grounded": true
+  },
+  {
+   "claim": "onederful's batch is Winter 2018.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"batch\":\"Winter 2018\"",
+   "reason": "Matches onederful's recorded batch.",
+   "grounded": true
+  },
+  {
+   "claim": "onederful's industry is Healthcare IT.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"subindustry\":\"Healthcare -> Healthcare IT\"",
+   "reason": "onederful's subindustry field is Healthcare IT.",
+   "grounded": true
+  },
+  {
+   "claim": "The 5th result was Arini.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"name\":\"Arini\"",
+   "reason": "Arini is the fifth hit in the results array.",
+   "grounded": true
+  },
+  {
+   "claim": "Arini is located in San Francisco.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"all_locations\":\"San Francisco, CA, USA\"",
+   "reason": "Matches Arini's recorded location.",
+   "grounded": true
+  },
+  {
+   "claim": "Arini's description is \"AI receptionist for dentists\".",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"one_liner\":\"AI receptionist for dentists\"",
+   "reason": "Matches Arini's one_liner exactly.",
+   "grounded": true
+  },
+  {
+   "claim": "Arini's batch is Winter 2024.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"batch\":\"Winter 2024\"",
+   "reason": "Matches Arini's recorded batch.",
+   "grounded": true
+  },
+  {
+   "claim": "Arini's industry is Healthcare IT.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"subindustry\":\"Healthcare -> Healthcare IT\"",
+   "reason": "Arini's subindustry field is Healthcare IT.",
+   "grounded": true
+  },
+  {
+   "claim": "The 6th result was Toothy AI.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"name\":\"Toothy AI\"",
+   "reason": "Toothy AI is the sixth hit in the results array.",
+   "grounded": true
+  },
+  {
+   "claim": "Toothy AI is located in San Francisco.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"all_locations\":\"San Francisco, CA, USA\"",
+   "reason": "Matches Toothy AI's recorded location.",
+   "grounded": true
+  },
+  {
+   "claim": "Toothy AI's description is \"AI for insurance verification & billing at dental clinics\".",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"one_liner\":\"AI for insurance verification & billing at dental clinics\"",
+   "reason": "Matches Toothy AI's one_liner exactly.",
+   "grounded": true
+  },
+  {
+   "claim": "Toothy AI's batch is Winter 2025.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"batch\":\"Winter 2025\"",
+   "reason": "Matches Toothy AI's recorded batch.",
+   "grounded": true
+  },
+  {
+   "claim": "Toothy AI's industry is Healthcare IT.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"subindustry\":\"Healthcare -> Healthcare IT\"",
+   "reason": "Toothy AI's subindustry field is Healthcare IT.",
+   "grounded": true
+  },
+  {
+   "claim": "The 7th result was Denta.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"name\":\"Denta\"",
+   "reason": "Denta is the seventh hit in the results array.",
+   "grounded": true
+  },
+  {
+   "claim": "Denta is located in San Francisco.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"all_locations\":\"San Francisco, CA, USA\"",
+   "reason": "Matches Denta's recorded location.",
+   "grounded": true
+  },
+  {
+   "claim": "Denta's description is \"Dental Insurance\".",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"one_liner\":\"Dental Insurance\"",
+   "reason": "Matches Denta's one_liner exactly.",
+   "grounded": true
+  },
+  {
+   "claim": "Denta's batch is Summer 2026.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"batch\":\"Summer 2026\"",
+   "reason": "Matches Denta's recorded batch.",
+   "grounded": true
+  },
+  {
+   "claim": "Denta's industry is Fintech/Insurance.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"subindustry\":\"Fintech -> Insurance\"",
+   "reason": "Denta's industry/subindustry fields are Fintech and Fintech -> Insurance.",
+   "grounded": true
+  },
+  {
+   "claim": "The 8th result was Avora.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"name\":\"Avora\"",
+   "reason": "Avora is the eighth hit in the results array.",
+   "grounded": true
+  },
+  {
+   "claim": "Avora is located in San Francisco.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"all_locations\":\"San Francisco, CA, USA\"",
+   "reason": "Matches Avora's recorded location.",
+   "grounded": true
+  },
+  {
+   "claim": "Avora's description is \"Agents for dental operations\".",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"one_liner\":\"Agents for dental operations\"",
+   "reason": "Matches Avora's one_liner exactly.",
+   "grounded": true
+  },
+  {
+   "claim": "Avora's batch is Fall 2024.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"batch\":\"Fall 2024\"",
+   "reason": "Matches Avora's recorded batch.",
+   "grounded": true
+  },
+  {
+   "claim": "Avora's industry is Healthcare.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"industry\":\"Healthcare\"",
+   "reason": "Matches Avora's recorded industry.",
+   "grounded": true
+  },
+  {
+   "claim": "The 9th result was Adravision.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"name\":\"Adravision\"",
+   "reason": "Adravision is the ninth hit in the results array.",
+   "grounded": true
+  },
+  {
+   "claim": "Adravision is located in Singapore.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"all_locations\":\"Singapore, Singapore; Remote\"",
+   "reason": "Matches Adravision's recorded location.",
+   "grounded": true
+  },
+  {
+   "claim": "Adravision's description is \"Automation for dental clinics and insurance companies\".",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "Automation for dental clinics and insurance companies.",
+   "reason": "Matches Adravision's one_liner.",
+   "grounded": true
+  },
+  {
+   "claim": "Adravision's batch is Summer 2021.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"batch\":\"Summer 2021\"",
+   "reason": "Matches Adravision's recorded batch.",
+   "grounded": true
+  },
+  {
+   "claim": "Adravision's industry is Healthcare IT.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"subindustry\":\"Healthcare -> Healthcare IT\"",
+   "reason": "Adravision's subindustry field is Healthcare IT.",
+   "grounded": true
+  },
+  {
+   "claim": "The 10th result was 10x.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"name\":\"10x\"",
+   "reason": "10x is the tenth hit in the results array.",
+   "grounded": true
+  },
+  {
+   "claim": "10x is located in San Francisco.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"all_locations\":\"San Francisco, CA, USA\"",
+   "reason": "Matches 10x's recorded location.",
+   "grounded": true
+  },
+  {
+   "claim": "10x's description is \"AI Sales Teams for Dental Practices\".",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"one_liner\":\"AI Sales Teams for Dental Practices\"",
+   "reason": "Matches 10x's one_liner exactly.",
+   "grounded": true
+  },
+  {
+   "claim": "10x's batch is Winter 2025.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"batch\":\"Winter 2025\"",
+   "reason": "Matches 10x's recorded batch.",
+   "grounded": true
+  },
+  {
+   "claim": "10x's industry is Healthcare.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"industry\":\"Healthcare\"",
+   "reason": "Matches 10x's recorded industry.",
+   "grounded": true
+  },
+  {
+   "claim": "The filter sidebar for the \"dental\" query included a \"Top Companies\" filter marked with a diamond emoji showing a count of 2.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"top_company\":{\"false\":160,\"true\":2}",
+   "reason": "top_company facet for the dental query shows a true count of 2; the diamond icon is standard styling for this field but count matches.",
+   "grounded": true
+  },
+  {
+   "claim": "The filter sidebar for the \"dental\" query included an \"Is Hiring\" filter showing a count of 47.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"isHiring\":{\"false\":115,\"true\":47}",
+   "reason": "isHiring facet for the dental query shows a true count of 47.",
+   "grounded": true
+  },
+  {
+   "claim": "The filter sidebar for the \"dental\" query included a \"Nonprofit\" filter showing a count of 2.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"nonprofit\":{\"false\":160,\"true\":2}",
+   "reason": "nonprofit facet for the dental query shows a true count of 2.",
+   "grounded": true
+  },
+  {
+   "claim": "The filter facets for batch updated to reflect only the 162 matching companies.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"exhaustiveFacetsCount\":true",
+   "reason": "The dental-query response recomputed batch facet counts specific to the 162 dental hits, distinct from the unfiltered facet counts.",
+   "grounded": true
+  },
+  {
+   "claim": "The filter facets for industry updated to reflect only the 162 matching companies.",
+   "verdict": "CONFIRMED",
+   "request_index": 12,
+   "quote": "\"industries\":{\"Healthcare\":69,\"B2B\":36",
+   "reason": "Industry facet counts in the dental-query response are specific to the 162 dental hits, different from the unfiltered totals.",
+   "grounded": true
+  },
+  {
+   "claim": "No point or vote scores are shown on the YC Startup Directory page.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No point/vote field appears in the recorded data, but the evidence doesn't confirm what the rendered page displays or omits."
+  },
+  {
+   "claim": "Only batch and industry tags are shown per company on the YC Startup Directory page.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "The records also contain additional 'tags' fields (e.g. Alara's tags), so it's unclear from the JSON alone whether only batch/industry are rendered on the page."
+  }
+ ]
+}

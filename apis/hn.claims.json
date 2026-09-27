@@ -1,0 +1,32 @@
+{
+ "name": "hn",
+ "judged_at": "2026-09-27 21:21",
+ "claims_from": "claims",
+ "judge": "llm",
+ "requests": 11,
+ "verdicts": [
+  {
+   "claim": "The top story is 'Claude Code is steganographically marking requests'",
+   "verdict": "CONFIRMED",
+   "request_index": 10,
+   "quote": "\"title\":\"Claude Code is steganographically marking requests\"",
+   "reason": "This is the first hit in the query results, confirming it as the top story.",
+   "grounded": true
+  },
+  {
+   "claim": "It has 2845 points",
+   "verdict": "CONTRADICTED",
+   "request_index": 10,
+   "quote": "\"points\":2445",
+   "reason": "The recorded points value is 2445, not 2845.",
+   "grounded": true
+  },
+  {
+   "claim": "I emailed the results to the team",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No evidence of any email being sent."
+  }
+ ]
+}

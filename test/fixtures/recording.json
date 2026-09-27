@@ -1,0 +1,46 @@
+{
+ "name": "fx",
+ "site": "https://hn.algolia.com/",
+ "query": "claude code",
+ "driver": "claude",
+ "started_at": "2026-09-27T21:16:24.494Z",
+ "duration_ms": 30000,
+ "end": 2,
+ "agent": [
+  {
+   "at_ms": 1000,
+   "tool": "browser_navigate",
+   "arg": "https://hn.algolia.com/"
+  }
+ ],
+ "summary": "",
+ "requests": [
+  {
+   "i": 0,
+   "at_ms": 900,
+   "method": "GET",
+   "url": "https://hn.algolia.com/",
+   "status": 200,
+   "body": "",
+   "resp": ""
+  },
+  {
+   "i": 1,
+   "at_ms": 5000,
+   "method": "POST",
+   "url": "https://x.algolia.net/1/indexes/Item_dev/query",
+   "status": 200,
+   "body": "{\"query\":\"\"}",
+   "resp": "{\"hits\":[{\"title\":\"Stephen Hawking has died\",\"points\":6015,\"objectID\":\"1\"}],\"nbHits\":9}"
+  },
+  {
+   "i": 2,
+   "at_ms": 9000,
+   "method": "POST",
+   "url": "https://x.algolia.net/1/indexes/Item_dev/query?q=claude%20code",
+   "status": 200,
+   "body": "{\"query\":\"claude code\"}",
+   "resp": "{\"hits\":[{\"title\":\"Claude Code is generally available\",\"url\":\"https://example.com/a\",\"author\":\"pg\",\"points\":2845,\"num_comments\":900,\"objectID\":\"41000001\",\"_highlightResult\":{\"title\":{\"value\":\"<em>Claude</em> Code\"}}},{\"title\":\"Show HN: GBrain, a second brain for agents\",\"url\":\"https://example.com/b\",\"points\":512,\"objectID\":\"41000002\"},{\"title\":\"Ask HN: What are you using Claude Code for?\",\"url\":null,\"points\":0,\"objectID\":\"41000003\"},{\"title\":\"Claude Code is generally available\",\"points\":1,\"objectID\":\"41000004\"},{\"title\":\"ab\",\"points\":3,\"objectID\":\"41000005\"}],\"nbHits\":1234,\"page\":0,\"hitsPerPage\":30}"
+  }
+ ]
+}

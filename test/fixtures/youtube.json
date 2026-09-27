@@ -1,0 +1,6 @@
+{"estimatedResults":"98000","contents":{"twoColumnSearchResultsRenderer":{"primaryContents":{"sectionListRenderer":{"contents":[{"itemSectionRenderer":{"contents":[
+ {"videoRenderer":{"videoId":"abc123","title":{"runs":[{"text":"Claude Code "},{"text":"in 100 seconds"}]},"viewCountText":{"simpleText":"1,204,332 views"},"thumbnail":{"thumbnails":[]}}},
+ {"adSlotRenderer":{"title":"no id here"}},
+ {"videoRenderer":{"videoId":"def456","title":{"simpleText":"Building agents with MCP"},"viewCountText":{"simpleText":"88K views"}}},
+ {"channelRenderer":{"channelId":"UC1","title":{"simpleText":"Anthropic"}}}
+]}}]}}}}}

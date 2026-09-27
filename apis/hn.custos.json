@@ -1,38 +1,58 @@
 {
  "name": "hn",
- "judged_at": "2026-09-27 21:20",
+ "judged_at": "2026-09-27 14:23",
  "claims_from": "summary",
  "judge": "llm",
  "requests": 11,
  "verdicts": [
   {
-   "claim": "The agent searched on hn.algolia.com for the query \"claude code\".",
+   "claim": "The AI agent performed a search on hn.algolia.com for the query \"claude code\".",
    "verdict": "UNPROVEN",
    "request_index": null,
    "quote": null,
-   "reason": "The recorded query URL redacts the actual search term parameter, so it cannot be confirmed."
+   "reason": "POST body/query text is not visible in the evidence to confirm the search query."
   },
   {
-   "claim": "The search on hn.algolia.com was sorted by popularity.",
-   "verdict": "CONFIRMED",
-   "request_index": 10,
-   "quote": "\"points\":2445",
-   "reason": "Results in the response are ordered in strictly descending points, consistent with popularity sort.",
-   "grounded": true
-  },
-  {
-   "claim": "The search on hn.algolia.com was set to search over all time.",
+   "claim": "The hn.algolia.com search was sorted by popularity.",
    "verdict": "UNPROVEN",
    "request_index": null,
    "quote": null,
-   "reason": "No date-range or time-filter parameter is visible in the recorded request."
+   "reason": "No evidence entry shows a sort parameter or UI state indicating sort order."
   },
   {
-   "claim": "The search on hn.algolia.com returned a set of top results.",
+   "claim": "The hn.algolia.com search covered all time.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No evidence entry shows a date-range parameter or UI state indicating time filter."
+  },
+  {
+   "claim": "The hn.algolia.com search page reported the search was sorted by popularity.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No evidence shows the rendered page's reported sort setting."
+  },
+  {
+   "claim": "The hn.algolia.com search page reported the search was over all time.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No evidence shows the rendered page's reported time range."
+  },
+  {
+   "claim": "The hn.algolia.com search page reported the query as \"claude code\".",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No evidence entry shows the rendered page's displayed query text."
+  },
+  {
+   "claim": "The hn.algolia.com search for \"claude code\" returned a list of top results.",
    "verdict": "CONFIRMED",
    "request_index": 10,
    "quote": "\"hits\":[{\"title\":\"Claude Code is steganographically marking requests\"",
-   "reason": "The response contains a hits array of results.",
+   "reason": "Entry 10 shows a list of hits returned for a query, matching the claimed results list.",
    "grounded": true
   },
   {
@@ -200,79 +220,79 @@
    "verdict": "CONFIRMED",
    "request_index": 10,
    "quote": "\"hits\":[{\"title\":\"Claude Code is steganographically marking requests\"",
-   "reason": "This item is first in the hits array.",
+   "reason": "This entry is first in the hits array.",
    "grounded": true
   },
   {
    "claim": "The result titled \"Claude 3.7 Sonnet and Claude Code\" was ranked number 2 in the search results.",
    "verdict": "CONFIRMED",
    "request_index": 10,
-   "quote": "\"title\":\"Claude 3.7 Sonnet and Claude Code\"",
-   "reason": "This item is second in the hits array, following the first entry.",
+   "quote": "{\"title\":\"Claude 3.7 Sonnet and Claude Code\"",
+   "reason": "This entry is second in the hits array.",
    "grounded": true
   },
   {
    "claim": "The result titled \"Claude Code's source code has been leaked via a map file in their NPM registry\" was ranked number 3 in the search results.",
    "verdict": "CONFIRMED",
    "request_index": 10,
-   "quote": "\"title\":\"Claude Code's source code has been leaked via a map file in their NPM registry\"",
-   "reason": "This item is third in the hits array.",
+   "quote": "{\"title\":\"Claude Code's source code has been leaked via a map file in their NPM registry\"",
+   "reason": "This entry is third in the hits array.",
    "grounded": true
   },
   {
    "claim": "The result titled \"The Claude Code Source Leak: fake tools, frustration regexes, undercover mode\" was ranked number 4 in the search results.",
    "verdict": "CONFIRMED",
    "request_index": 10,
-   "quote": "\"title\":\"The Claude Code Source Leak: fake tools, frustration regexes, undercover mode\"",
-   "reason": "This item is fourth in the hits array.",
+   "quote": "{\"title\":\"The Claude Code Source Leak: fake tools, frustration regexes, undercover mode\"",
+   "reason": "This entry is fourth in the hits array.",
    "grounded": true
   },
   {
    "claim": "The result titled \"Issue: Claude Code is unusable for complex engineering tasks with Feb updates\" was ranked number 5 in the search results.",
    "verdict": "CONFIRMED",
    "request_index": 10,
-   "quote": "\"title\":\"Issue: Claude Code is unusable for complex engineering tasks with Feb updates\"",
-   "reason": "This item is fifth in the hits array.",
+   "quote": "{\"title\":\"Issue: Claude Code is unusable for complex engineering tasks with Feb updates\"",
+   "reason": "This entry is fifth in the hits array.",
    "grounded": true
   },
   {
    "claim": "The result titled \"Claude Code refuses requests or charges extra if your commits mention 'OpenClaw'\" was ranked number 6 in the search results.",
    "verdict": "CONFIRMED",
    "request_index": 10,
-   "quote": "\"title\":\"Claude Code refuses requests or charges extra if your commits mention \\\"OpenClaw\\\"\"",
-   "reason": "This item is sixth in the hits array.",
+   "quote": "{\"title\":\"Claude Code refuses requests or charges extra if your commits mention \\\"OpenClaw\\\"\"",
+   "reason": "This entry is sixth in the hits array.",
    "grounded": true
   },
   {
    "claim": "The result titled \"Cowork: Claude Code for the rest of your work\" was ranked number 7 in the search results.",
    "verdict": "CONFIRMED",
    "request_index": 10,
-   "quote": "\"title\":\"Cowork: Claude Code for the rest of your work\"",
-   "reason": "This item is seventh in the hits array.",
+   "quote": "{\"title\":\"Cowork: Claude Code for the rest of your work\"",
+   "reason": "This entry is seventh in the hits array.",
    "grounded": true
   },
   {
    "claim": "The result titled \"Claude Code Unpacked: A visual guide\" was ranked number 8 in the search results.",
    "verdict": "CONFIRMED",
    "request_index": 10,
-   "quote": "\"title\":\"Claude Code Unpacked : A visual guide\"",
-   "reason": "This item is eighth in the hits array.",
+   "quote": "{\"title\":\"Claude Code Unpacked : A visual guide\"",
+   "reason": "This entry is eighth in the hits array.",
    "grounded": true
   },
   {
    "claim": "The result titled \"Tell HN: Anthropic no longer allowing Claude Code subscriptions to use OpenClaw\" was ranked number 9 in the search results.",
    "verdict": "CONFIRMED",
    "request_index": 10,
-   "quote": "\"title\":\"Tell HN: Anthropic no longer allowing Claude Code subscriptions to use OpenClaw\"",
-   "reason": "This item is ninth in the hits array.",
+   "quote": "{\"title\":\"Tell HN: Anthropic no longer allowing Claude Code subscriptions to use OpenClaw\"",
+   "reason": "This entry is ninth in the hits array.",
    "grounded": true
   },
   {
    "claim": "The result titled \"Tell HN: I'm 60 years old. Claude Code has re-ignited a passion\" was ranked number 10 in the search results.",
    "verdict": "CONFIRMED",
    "request_index": 10,
-   "quote": "\"title\":\"Tell HN: I'm 60 years old. Claude Code has re-ignited a passion\"",
-   "reason": "This item is tenth in the hits array.",
+   "quote": "{\"title\":\"Tell HN: I'm 60 years old. Claude Code has re-ignited a passion\"",
+   "reason": "This entry is tenth in the hits array.",
    "grounded": true
   }
  ]

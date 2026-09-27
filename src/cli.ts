@@ -5,7 +5,8 @@ import { custos } from "./custos.ts";
 import { toPilotError } from "./errors.ts";
 import { learn } from "./learn.ts";
 import { call, swarm } from "./replay.ts";
-import { page, qm, river, status } from "./share.ts";
+import { qm, river, status } from "./share.ts";
+import { ask, page } from "./gbrain.ts";
 import { calls, loadApi, names, saveApi } from "./store.ts";
 import { verify } from "./validate.ts";
 
@@ -19,6 +20,7 @@ ${dim("CORE")}
   pilot learn <name> <url> "<query>" [--typer]   a Claude Code agent searches the site while Pilot records; saves apis/<name>.json
   pilot call <name> "<query>"                    replay the learned request with a new query (no browser, no model)
   pilot swarm <name> <file|q1 q2 ...>            many queries at once
+  pilot ask "<question>" [--query "<q>"]         GBrain picks the learned API that answers it, Pilot calls it
 ${dim("PROVE")}
   pilot custos <name> "<claim>" ... | --summary  CONFIRMED / CONTRADICTED / UNPROVEN, each citing a recorded request [--rules offline]
   pilot verify <name>                            replay with the learned query and a probe; results must exist and differ
@@ -26,7 +28,8 @@ ${dim("LOOK")}
   pilot list                                     learned APIs, proof status, calls, time saved
   pilot console [--port 4321]                    the live console (race, recordings, custos)
 ${dim("SHARE")}
-  pilot pages                                    write GBrain pages (then: gbrain import apis/ --no-embed)
+  pilot pages                                    write every API + custos verdicts into GBrain (learn/custos do it too)
+  pilot mcp                                      MCP server (stdio): pilot_list/call/ask/swarm/custos for any agent
   pilot qm [dir]                                 export a QM tool so @pilot answers in Slack
   pilot river [out.jsonl]                        fine-tuning data from runs custos fully confirmed`;
 
@@ -74,7 +77,7 @@ async function main(a: string[]) {
       console.log(dim(`custos: ${flags.has("--summary") ? "splitting the agent's summary into claims, then " : ""}judging against the recording…`));
       const r = await custos(name, flags.has("--summary") ? "summary" : args.slice(1), { rules: flags.has("--rules") });
       r.verdicts.forEach((v) => console.log(verdictLine(v)));
-      const s = status(name);
+      const n = (k: string) => r.verdicts.filter((v) => v.verdict === k).length, s = { confirmed: n("CONFIRMED"), contradicted: n("CONTRADICTED"), unproven: n("UNPROVEN") };
       console.log(`\n  ${green(`${s.confirmed} confirmed`)} · ${red(`${s.contradicted} contradicted`)} · ${grey(`${s.unproven} unproven`)}  ${dim(`against ${r.requests} recorded requests`)}`);
       await page(name);
       break;
@@ -93,6 +96,14 @@ async function main(a: string[]) {
       }
       break;
     }
+    case "ask": {
+      const qi = rest.indexOf("--query"), q = qi >= 0 ? rest[qi + 1] : undefined;
+      const r = await ask(args.filter((x) => x !== q).join(" "), { query: q });
+      console.log(`${dim(`gbrain → ${r.route.hit.slug} (score ${r.route.hit.score.toFixed(2)}, ${Math.round(r.route_ms)} ms)`)}  ${bold(r.result.name)}(${amber(JSON.stringify(r.result.query))})  ${green(`${Math.round(r.result.ms)} ms`)}  ${dim(`custos ${r.confirmed} confirmed`)}`);
+      r.result.results.forEach((x) => console.log(`  • ${x.title.slice(0, 90)}  ${dim(x.detail)}`));
+      break;
+    }
+    case "mcp": { const { serveMcp } = await import("./mcp.ts"); await serveMcp(); break; }
     case "pages": for (const n of names()) console.log(await page(n)); break;
     case "qm": { const r = qm(args[0]); console.log(`QM tool written to ${r.out} (${r.sites} sites). Copy it to <your-qm-deployment>/sandbox/tools/pilot/ and run \`qm up\`.`); break; }
     case "river": { const r = river(args[0]); console.log(`${r.kept.length} verified run(s) → ${r.out}${r.skipped.length ? dim(`\nleft out: ${r.skipped.join("; ")}`) : ""}`); break; }

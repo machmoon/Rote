@@ -43,7 +43,7 @@ export function serve(port = 4321) {
       if (u.pathname === "/" || u.pathname === "/index.html") { res.writeHead(200, { "content-type": "text/html; charset=utf-8" }); return res.end(html()); }
       if (u.pathname === "/api/state") return json(res, 200, { apis: state() });
       const m = u.pathname.match(/^\/api\/(recording|verdicts)\/([\w-]+)$/);
-      if (m) return json(res, 200, m[1] === "recording" ? recordingView(m[2]) : loadVerdicts(m[2]));
+      if (m) return json(res, 200, m[1] === "recording" ? recordingView(m[2]) : { summary: loadVerdicts(m[2], "summary"), claims: loadVerdicts(m[2], "claims") });
       if (u.pathname === "/api/call" && req.method === "POST") {
         const b = await readBody(req); const r = await call(b.name, b.query);
         return json(res, 200, { ...r, data: undefined, browser_seconds: loadApi(b.name).browser_seconds });

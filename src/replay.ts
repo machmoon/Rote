@@ -3,17 +3,23 @@ import { gunzipSync } from "node:zlib";
 import { fail } from "./errors.ts";
 import { type Api, logCall, loadApi } from "./store.ts";
 
-export const fill = (t: string, q: string) => t.replaceAll("{query:url}", encodeURIComponent(q)).replaceAll("{query:raw}", q);
+// function replacers: a string replacement would expand "$&", "$$" etc. inside the user's query
+export const fill = (t: string, q: string) => t.replaceAll("{query:url}", () => encodeURIComponent(q)).replaceAll("{query:raw}", () => q);
+// a raw query right after "=" sits in a form-encoded value (?q=..., Algolia "params":"...&query=..."): it must be URL-encoded,
+// or "ai & robotics" splits the params. learn can't tell raw from url when the learned query is one plain word.
+const formSafe = (t: string) => t.replaceAll("={query:raw}", "={query:url}");
+/** Body fill: {query:url} gets the plain query URL-encoded (JSON-safe), {query:raw} gets it JSON-escaped. */
+export const fillBody = (t: string, q: string) => formSafe(t).replaceAll("{query:url}", () => encodeURIComponent(q)).replaceAll("{query:raw}", () => JSON.stringify(q).slice(1, -1));
 
 export interface Result { title: string; detail: string; }
 export interface CallResult { name: string; query: string; ms: number; results: Result[]; total?: number; data: unknown; }
 
 export async function rawCall(api: Api, q: string): Promise<{ data: unknown; ms: number }> {
-  const body = api.body ? fill(api.body, JSON.stringify(q).slice(1, -1)) : undefined;
+  const body = api.body ? fillBody(api.body, q) : undefined;
   const t = performance.now();
   let res: Response;
   try {
-    res = await fetch(fill(api.url, q), { method: api.method, headers: api.headers, body, signal: AbortSignal.timeout(15000) });
+    res = await fetch(fill(formSafe(api.url), q), { method: api.method, headers: api.headers, body, signal: AbortSignal.timeout(15000) });
   } catch (e) {
     throw fail("SOURCE_UNAVAILABLE", `${new URL(api.url).host} did not answer: ${(e as Error).message}`, api.name);
   }
@@ -56,6 +62,7 @@ export function total(data: any): number | undefined {
 }
 
 export async function call(name: string, q: string): Promise<CallResult> {
+  if (typeof q !== "string") throw fail("INVALID_ARGUMENT", "query must be a string", name);
   const api = loadApi(name);
   const { data, ms } = await rawCall(api, q);
   logCall(name, ms);
@@ -63,6 +70,7 @@ export async function call(name: string, q: string): Promise<CallResult> {
 }
 
 export async function swarm(name: string, qs: string[]) {
+  if (!Array.isArray(qs) || !qs.length || qs.some((q) => typeof q !== "string")) throw fail("INVALID_ARGUMENT", "swarm needs one or more string queries", name);
   const api = loadApi(name);
   const t = performance.now();
   const runs = await Promise.all(qs.map(async (q) => {

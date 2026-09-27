@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "pilot": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["/Users/patliu/.superset/worktrees/Thanks/shelled-steed/src/cli.ts", "mcp"]
+    },
+    "gbrain": {
+      "type": "stdio",
+      "command": "/Users/patliu/.bun/bin/gbrain",
+      "args": ["serve", "--surface", "starter"],
+      "env": { "GBRAIN_HOME": "/Users/patliu/.gbrain-pilot", "PATH": "/Users/patliu/.bun/bin:/usr/bin:/bin" }
+    }
+  }
+}

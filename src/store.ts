@@ -80,16 +80,22 @@ export function names(): string[] {
   return readdirSync(APIS).filter((f) => /^[a-z0-9_-]+\.json$/i.test(f)).map((f) => f.slice(0, -5)).sort();
 }
 export function loadApi(name: string): Api {
-  if (!existsSync(p(name, ".json"))) throw fail("UNKNOWN_PILOT", `No learned API called "${name}". Try: pilot list`, name);
+  if (typeof name !== "string" || !/^[\w-]+$/.test(name) || !existsSync(p(name, ".json"))) throw fail("UNKNOWN_PILOT", `No learned API called "${name}". Try: pilot list`, name);
   return readJson<Api>(p(name, ".json"));
 }
 export const saveApi = (a: Api) => (mkdirSync(APIS, { recursive: true }), writeFileSync(p(a.name, ".json"), JSON.stringify(a, null, 1)));
 export const hasRecording = (name: string) => existsSync(p(name, ".recording.json"));
-export const loadRecording = (name: string) => readJson<Recording>(p(name, ".recording.json"));
+export const loadRecording = (name: string) => {
+  if (typeof name !== "string" || !/^[\w-]+$/.test(name) || !hasRecording(name)) throw fail("UNKNOWN_PILOT", `No recording for "${name}". Try: pilot list`, name);
+  return readJson<Recording>(p(name, ".recording.json"));
+};
 export const saveRecording = (r: Recording) => writeFileSync(p(r.name, ".recording.json"), JSON.stringify(r));
-export const loadVerdicts = (name: string): { judged_at: string; claims_from: string; verdicts: Verdict[] } | null =>
-  existsSync(p(name, ".custos.json")) ? readJson(p(name, ".custos.json")) : null;
-export const saveVerdicts = (name: string, v: object) => writeFileSync(p(name, ".custos.json"), JSON.stringify(v, null, 1));
+// <name>.custos.json = verdicts on the agent's own summary (the proof that counts);
+// <name>.claims.json = ad-hoc claims someone asked about, kept apart so they never overwrite the proof.
+type Verdicts = { judged_at: string; claims_from: string; verdicts: Verdict[] };
+const vfile = (name: string, from: string) => p(name, from === "summary" ? ".custos.json" : ".claims.json");
+export const loadVerdicts = (name: string, from = "summary"): Verdicts | null => existsSync(vfile(name, from)) ? readJson(vfile(name, from)) : null;
+export const saveVerdicts = (name: string, v: Verdicts) => writeFileSync(vfile(name, v.claims_from), JSON.stringify(v, null, 1));
 export const writePage = (name: string, md: string) => writeFileSync(p(name, ".md"), md);
 
 export function logCall(name: string, ms: number) {
@@ -99,4 +105,4 @@ export function calls(name: string): number[] {
   try { return readFileSync(p(name, ".calls.log"), "utf8").trim().split("\n").filter(Boolean).map((l) => Number(l.split(" ")[1])); }
   catch { return []; }
 }
-export const stamp = () => new Date().toISOString().slice(0, 16).replace("T", " ");
+export const stamp = () => new Date().toLocaleString("sv-SE", { hour12: false }).slice(0, 16);
