@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Pilot CLI. Help grouping follows Cqctxs/Pilot src/cli/main.ts (core / look / share).
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { custos } from "./custos.ts";
 import { toPilotError } from "./errors.ts";
 import { learn } from "./learn.ts";
@@ -79,6 +79,7 @@ async function main(a: string[]) {
       break;
     }
     case "swarm": {
+      if (args.length === 2 && /\.txt$/.test(args[1]) && !existsSync(args[1])) { console.error(red(`INVALID_ARGUMENT: file not found: ${args[1]}`)); process.exit(1); }
       const qs = args.length === 2 && !args[1].includes(" ") && /\.txt$/.test(args[1]) ? readFileSync(args[1], "utf8").split("\n").map((s) => s.trim()).filter(Boolean) : args.slice(1);
       const s = await swarm(args[0], qs);
       s.runs.forEach((r) => console.log(`  ${amber(r.query.slice(0, 22).padEnd(22))} ${String(Math.round(r.ms)).padStart(5)} ms  ${(r.ok ? r.top : red(r.top)).slice(0, 70)}`));

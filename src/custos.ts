@@ -11,6 +11,8 @@ export async function claudeJson<T>(prompt: string, schema: object, model = proc
   const proc = spawn(CLAUDE, ["-p", "--output-format", "json", "--json-schema", JSON.stringify(schema), "--tools", "", "--disable-slash-commands", "--model", model],
     { env: claudeEnv(), stdio: ["pipe", "pipe", "pipe"] });
   let stdout = "", stderr = "";
+  const spawned = new Promise<void>((ok, bad) => { proc.on("spawn", () => ok()); proc.on("error", bad); });
+  try { await spawned; } catch { throw fail("AI_REQUEST_FAILED", `Claude Code isn't installed at ${CLAUDE}; install it, or use --rules for the offline judge`); }
   proc.stdout.on("data", (d) => (stdout += d));
   proc.stderr.on("data", (d) => (stderr += d));
   proc.stdin.end(prompt);

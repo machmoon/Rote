@@ -1,5 +1,11 @@
-node_modules/
-.DS_Store
-apis/*.calls.log
 *.local.*
+*.mp4
+*.wav
+*.webm
+.DS_Store
+.env*
+.venv/
+apis/*.calls.log
 integrations/.venv/
+node_modules/
+video/

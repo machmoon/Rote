@@ -3,12 +3,13 @@
   "label": "Pilot learned site APIs",
   "advertise": "pilot",
   "hints": [
-    "Pilot calls website search APIs that a teammate's agent already learned, in about a second, with no browser. Sites: devto (DEV Community), hn (Hacker News Search powered by Algolia), yc (The YC Startup Directory | Y Combinator).",
+    "Pilot calls website search APIs that a teammate's agent already learned, in about a second, with no browser. Sites: devto (DEV Community), hf (Hugging Face – The AI community building the future.), hn (Hacker News Search powered by Algolia), yc (The YC Startup Directory | Y Combinator).",
     "When someone writes `@pilot <site> <question>` or asks you to search one of those sites, run `pilot call <site> \"<question>\"` and post its output (the top 5 results) as your answer. Don't open a browser for these sites.",
     "`pilot list` shows the learned sites. Pilot is read-only: it only replays search requests."
   ],
   "egress": [
     "45bwzj1sgc-dsn.algolia.net",
+    "huggingface.co",
     "prsobfp46h-3.algolianet.com",
     "uj5wyc0l7x-dsn.algolia.net"
   ],
@@ -28,6 +29,11 @@
       {
         "from": "devto.json",
         "to": "/usr/local/lib/pilot/apis/devto.json",
+        "mode": "0644"
+      },
+      {
+        "from": "hf.json",
+        "to": "/usr/local/lib/pilot/apis/hf.json",
         "mode": "0644"
       },
       {

@@ -4,7 +4,7 @@ type: learned-api
 tags: [learned-api, search, yc]
 site: https://www.ycombinator.com/companies
 method: POST
-learned: 2026-09-27 21:21
+learned: 2026-09-27 14:21
 driver: claude
 ---
 
@@ -12,7 +12,7 @@ driver: claude
 
 The YC Startup Directory | Y Combinator
 
-Search ycombinator.com/companies by keyword without a browser. Learned by a Claude Code agent in one run (32.3 s, 17 requests); a call takes about a second.  Status: custos: 56/59 of the agent's claims confirmed against the recording.
+Search ycombinator.com/companies by keyword without a browser. Learned by a Claude Code agent in one run (32.3 s, 17 requests); a call takes about a second. Replay verified 2026-09-27 14:38: a different query returns different results. Status: custos: 56/59 of the agent's claims confirmed against the recording.
 
 ## Call
 

@@ -22,7 +22,9 @@ export type LearnEvent =
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const MCP = "@playwright/mcp@0.0.82";
 const CDP_PORT = 9333;
-const DROP = new Set(["content-length", "accept-encoding", "cookie", "content-encoding", "host", "connection"]);
+// never save session state or cache validators: cookies, auth, and ETag/If-* headers (a replay would get 304s)
+const DROP = new Set(["content-length", "accept-encoding", "cookie", "authorization", "content-encoding", "host", "connection",
+  "if-none-match", "if-modified-since", "x-csrf-token", "x-xsrf-token"]);
 
 const forms = (q: string) => [q, encodeURIComponent(q), encodeURIComponent(q).replaceAll("%20", "+"), q.replaceAll(" ", "%20"), JSON.stringify(q).slice(1, -1)];
 

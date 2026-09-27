@@ -1,6 +1,6 @@
 // The live console: node:http + one static page + JSON/SSE endpoints. No framework, so it starts instantly at the venue.
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { custos } from "./custos.ts";
 import { fail, toPilotError } from "./errors.ts";
@@ -29,6 +29,7 @@ function state() {
       calls: cs.length, avg_call_ms: cs.length ? cs.slice(-50).reduce((x, y) => x + y, 0) / Math.min(cs.length, 50) : null,
       saved_s: cs.reduce((t, ms) => t + a.browser_seconds - ms / 1000, 0), proof: status(n),
       agent_steps: rec?.agent.length ?? 0, has_summary: !!rec?.summary,
+      memorable: existsSync(join(ROOT, "memorable", `${n}.trace.json`)),
     };
   });
 }
