@@ -1,0 +1,36 @@
+{
+ "name": "hn",
+ "site": "https://hn.algolia.com/",
+ "method": "POST",
+ "url": "https://uj5wyc0l7x-2.algolianet.com/1/indexes/Item_dev/query?x-algolia-agent=Algolia%20for%20JavaScript%20(4.13.1)%3B%20Browser%20(lite)&x-algolia-api-key=28f0e1ec37a5e792e6845e67da5f20dd&x-algolia-application-id=UJ5WYC0L7X",
+ "body": "{\"query\":\"{query:raw}\",\"analyticsTags\":[\"web\"],\"page\":0,\"hitsPerPage\":30,\"minWordSizefor1Typo\":4,\"minWordSizefor2Typos\":8,\"advancedSyntax\":true,\"ignorePlurals\":false,\"clickAnalytics\":true,\"minProximity\":7,\"numericFilters\":[],\"tagFilters\":[[\"story\"],[]],\"typoTolerance\":true,\"queryType\":\"prefixLast\",\"restrictSearchableAttributes\":[\"title\",\"comment_text\",\"url\",\"story_text\",\"author\"],\"getRankingInfo\":true}",
+ "headers": {
+  "accept": "*/*",
+  "accept-language": "en-US",
+  "origin": "https://hn.algolia.com",
+  "referer": "https://hn.algolia.com/",
+  "sec-fetch-dest": "empty",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-site": "cross-site",
+  "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36",
+  "content-type": "application/x-www-form-urlencoded",
+  "sec-ch-ua": "\"Google Chrome\";v=\"153\", \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"153\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-ch-ua-platform": "\"macOS\""
+ },
+ "learned_query": "claude code",
+ "driver": "typer",
+ "browser_seconds": 24.3,
+ "requests_seen": 16,
+ "learned_at": "2026-09-27 21:14",
+ "verified": {
+  "ok": true,
+  "checked_at": "2026-09-27 21:15",
+  "learned_query_results": 30,
+  "probe_query": "python",
+  "probe_results": 30,
+  "differs": true,
+  "problems": []
+ },
+ "about": "Hacker News Search powered by Algolia"
+}

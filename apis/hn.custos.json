@@ -1,0 +1,16 @@
+{
+ "name": "hn",
+ "judged_at": "2026-09-27 21:15",
+ "claims_from": "claims",
+ "judge": "rules",
+ "requests": 16,
+ "verdicts": [
+  {
+   "claim": "It has 2845 points",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "nothing in the recording supports or refutes this"
+  }
+ ]
+}
