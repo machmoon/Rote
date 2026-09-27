@@ -33,6 +33,7 @@
   --pad: 40px;
 }
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; background: var(--bg); color: var(--fg); font: 400 16px/24px var(--ui); -webkit-font-smoothing: antialiased; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
@@ -93,7 +94,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
 .stat .n { font: 400 13px/18px var(--ui); color: var(--subtle); }
 
 /* lanes: envmem/src/ui/app.css .race-grid/.race-side/.race-steps */
-.lanes { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; }
+.lanes { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; }
 .lane { border: 1px solid var(--border); border-radius: 6px; background: var(--surface); overflow: hidden; display: flex; flex-direction: column; height: max(360px, calc(100vh - 420px)); position: relative; }
 .lane.won { border-color: color-mix(in srgb, var(--mint) 55%, transparent); }
 .lane-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -157,7 +158,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
 .swarm-sum { display: flex; gap: 12px; }
 
 /* custos */
-.two { display: grid; grid-template-columns: 1fr 1.15fr; gap: 20px; margin-top: 22px; align-items: start; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 20px; margin-top: 22px; align-items: start; }
 .panel { border: 1px solid var(--border); border-radius: 6px; background: var(--surface); overflow: hidden; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--border); }
 .panel-body { padding: 16px 18px; }
@@ -206,7 +207,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
 .kv { font: 400 14px/20px var(--mono); color: var(--muted); word-break: break-all; margin-bottom: 14px; }
 
 /* library */
-.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 16px; margin-top: 22px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(560px, 100%), 1fr)); gap: 16px; margin-top: 22px; }
 .card { border: 1px solid var(--border); border-radius: 6px; background: var(--surface); padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
 .card-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
 .card h3 { margin: 0; font: 500 28px/32px var(--ui); letter-spacing: -.03em; }
@@ -250,6 +251,19 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
   .cards { grid-template-columns: 1fr 1fr; } .speedup .x { font-size: 46px; line-height: 44px; }
   .rows li { font-size: 14px; } .rows .tool { width: 84px; }
   .tagline { display: none; }
+}
+@media (max-width: 700px) {
+  :root { --pad: 16px; }
+  .top { gap: 10px; } .brand h1 { font-size: 18px; } .tabs { overflow-x: auto; } .tab { padding: 0 8px; font-size: 11px; } .tab kbd { display: none; }
+  .headline { font-size: 30px; line-height: 36px; } .lede { font-size: 16px; line-height: 24px; }
+  .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; } .stat { padding: 10px; } .stat .v { font-size: 22px; line-height: 28px; } .stat .n { display: none; }
+  .field.q { width: 100%; } .controls > * { flex: 1 1 auto; } .note { flex-basis: 100%; }
+  .rows .tool { width: 64px; } .rows li { font-size: 13px; gap: 8px; padding: 8px 12px; } .rows li.end .flag { display: none; }
+  .clock { font-size: 30px; } .speedup .x { font-size: 34px; line-height: 34px; }
+  .tiles { grid-template-columns: repeat(3, 1fr) !important; } .swarm-sum { flex-wrap: wrap; }
+  .metrics { grid-template-columns: repeat(2, 1fr); gap: 10px; } .gbrain { grid-template-columns: 1fr; }
+  .learn-form { grid-template-columns: 1fr !important; } .drawer { width: 100vw; }
+  .ask-step .label { width: auto; }
 }
 @media (max-width: 1100px) { .race-hero, .lanes, .two, .learn-grid, .cards { grid-template-columns: 1fr; } .tiles { grid-template-columns: repeat(5, 1fr); } .learn-form { grid-template-columns: 1fr 1fr; } }
 </style>
@@ -447,9 +461,11 @@ async function loadState() {
     if (end?.body && !a.body) { const lq = JSON.stringify(a.learned_query).slice(1, -1); a.body = end.body.includes(lq) ? end.body.split(lq).join("{query:raw}") : end.body; }
   }));
   if (!CUR) CUR = STATE.apis.find((a) => a.name === "hn")?.name ?? STATE.apis[0]?.name;
-  if (CUR) { $("#race-api").value = CUR; $("#cu-api").value = CUR; }
+  if (!CU) CU = STATE.apis.find((a) => a.name === "hn")?.name ?? CUR;
+  if (CUR) $("#race-api").value = CUR; if (CU) $("#cu-api").value = CU;
 }
 const cur = () => STATE.apis.find((a) => a.name === CUR);
+let CU = null; const cuCur = () => STATE.apis.find((a) => a.name === CU);
 
 // ================= RACE =================
 let speed = 1, racing = false, raf = 0;
@@ -474,8 +490,13 @@ function templHtml(a, q) {
   return `<span class="m">${esc(a.method)}</span>${esc(host)}${esc(path)}${urlQ}${bodyHtml}`;
 }
 
+const warmed = new Set();
+function warm(a) { // one hidden call per API so the first race doesn't pay the cold TLS/DNS path; result not shown
+  if (!a || warmed.has(a.name)) return; warmed.add(a.name);
+  fetch("/api/call", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: a.name, query: a.learned_query }) }).catch(() => {});
+}
 async function setupRace() {
-  const a = cur(); if (!a) { $("#race-eyebrow").textContent = "No learned APIs yet. Use Learn."; return; }
+  const a = cur(); warm(a); if (!a) { $("#race-eyebrow").textContent = "No learned APIs yet. Use Learn."; return; }
   const rec = a.agent_steps || a.requests_seen ? await getRec(a.name).catch(() => null) : null;
   const dur = rec?.duration_ms ?? a.browser_seconds * 1000;
   $("#race-eyebrow").textContent = `${hostPath(a.site).host} · ${a.driver === "claude" ? "Claude Code + Playwright MCP" : a.driver} · ${rec?.agent.length ?? 0} steps · ${rec?.requests.length ?? a.requests_seen} requests`;
@@ -497,7 +518,7 @@ function resetLanes(a) {
   $("#p-speed").hidden = true; $("#race-delta").innerHTML = ""; $("#lane-pilot").classList.remove("won"); $("#lane-agent").classList.remove("won");
 }
 $("#race-q").addEventListener("input", () => { const a = cur(); if (a && !racing) $("#p-req").innerHTML = templHtml(a, $("#race-q").value); });
-$("#race-api").onchange = (e) => { CUR = e.target.value; $("#cu-api").value = CUR; setupRace(); };
+$("#race-api").onchange = (e) => { CUR = e.target.value; setupRace(); };
 
 async function startRace() {
   const a = cur(); if (!a || racing) return;
@@ -635,13 +656,26 @@ function renderClaims() {
 const updCheckBtn = () => { const n = claims.filter((c) => c.on).length; $("#cu-check").textContent = `Check ${n} claim${n === 1 ? "" : "s"}`; $("#cu-check").disabled = !n || judging; };
 $("#cu-add").onclick = () => { const v = $("#cu-new").value.trim(); if (!v) return; claims.push({ text: v, on: true }); $("#cu-new").value = ""; renderClaims(); };
 $("#cu-new").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("#cu-add").click(); } });
-$("#cu-api").onchange = (e) => { CUR = e.target.value; $("#race-api").value = CUR; custosFor = null; loadCustos(); setupRace(); };
+$("#cu-api").onchange = (e) => { CU = e.target.value; custosFor = null; loadCustos(); };
 
 let custosFor = null, judging = false;
+// presets for sites without hand-written ones: one true line from the summary, the same line with a wrong number, one action never taken
+function autoPresets(summary) {
+  const line = (summary ?? "").split("\n").map((l) => l.match(/^\s*1\.\s+(.*)/)?.[1]).find(Boolean) ?? "";
+  const clean = line.replace(/\*\*/g, "").replace(/\s*\([^)]*ago\)/g, "").trim();
+  const out = [];
+  if (clean) {
+    out.push(`The first result is ${clean.length > 110 ? clean.slice(0, 110) + "…" : clean}`);
+    const m = clean.match(/\d[\d,]*/);
+    if (m) { const n = +m[0].replaceAll(",", ""); out.push(`The first result shows ${(n + (n > 50 ? 400 : 7)).toLocaleString("en-US")} ${clean.slice(m.index + m[0].length).trim().split(/[ ,·—]/)[0] || ""}`.trim()); }
+  }
+  out.push("I emailed the results to the team");
+  return out;
+}
 async function loadCustos() {
-  const a = cur(); if (!a || custosFor === a.name) return; custosFor = a.name;
-  claims = (PRESETS[a.name] ?? []).map((t) => ({ text: t, on: true })); renderClaims();
+  const a = cuCur(); if (!a || custosFor === a.name) return; custosFor = a.name;
   const rec = await getRec(a.name).catch(() => null);
+  claims = (PRESETS[a.name] ?? autoPresets(rec?.summary)).map((t) => ({ text: t, on: true })); renderClaims();
   $("#cu-summary").innerHTML = rec?.summary ? mdLite(rec.summary) : `<p class="dim">This run has no agent summary (driver: ${esc(a.driver)}).</p>`;
   $("#cu-meta").innerHTML = rec ? `<b>${rec.requests.length}</b> recorded requests · <b>${secs(rec.duration_ms)}</b>` : "";
   $("#cu-eyebrow").textContent = `custos · ${a.name} · checks the agent's claims against ${rec?.requests.length ?? "the"} recorded requests`;
@@ -674,12 +708,12 @@ function renderVerdicts(v, rec, other) {
   $$("#cu-verdicts .vcard.click").forEach((el) => { const open = () => openRequest(list[+el.dataset.i]); el.onclick = open; el.onkeydown = (e) => { if (e.key === "Enter") open(); }; });
 }
 async function runCustos(body, n) {
-  const a = cur(); if (!a || judging) return;
+  const a = cuCur(); if (!a || judging) return;
   judging = true; updCheckBtn(); $("#cu-summ").disabled = true;
   const rec = await getRec(a.name).catch(() => null);
   const t0 = performance.now();
   $("#cu-judging").innerHTML = `<div class="judging"><span class="pulse"></span><div><div class="t">custos is judging${body.summary ? " the agent's summary" : ` ${n} claim${n === 1 ? "" : "s"}`}…</div><div class="s" id="cu-phase">${body.summary ? "splitting the summary into atomic claims" : `reading ${rec?.requests.length ?? ""} recorded requests`}</div></div><span class="sec" id="cu-sec">0s</span></div>`;
-  $("#cu-verdicts").innerHTML = Array.from({ length: body.summary ? 4 : n }, () => `<div class="skel"></div>`).join(""); $("#cu-vhead").hidden = true;
+  $("#cu-verdicts").innerHTML = Array.from({ length: body.summary ? 4 : n }, () => `<div class="skel"></div>`).join(""); $("#cu-vhead").hidden = true; $("#cu-other").innerHTML = "";
   const phases = body.summary ? ["splitting the summary into atomic claims", `reading ${rec?.requests.length} recorded requests`, "citing [request] + verbatim quote per claim", "grounding guard: checking every quote is really there"] : [`reading ${rec?.requests.length} recorded requests`, "citing [request] + verbatim quote per claim", "grounding guard: checking every quote is really there"];
   const timer = setInterval(() => { const s = (performance.now() - t0) / 1000; const el = $("#cu-sec"); if (el) el.textContent = Math.floor(s) + "s"; const ph = $("#cu-phase"); if (ph) ph.textContent = phases[Math.min(phases.length - 1, Math.floor(s / 12))]; }, 250);
   try {
@@ -707,7 +741,7 @@ function highlight(text, quote) {
   return { html: esc(text.slice(0, idx)) + `<mark id="dr-mark">${esc(text.slice(idx, idx + len))}</mark>` + esc(text.slice(idx + len)), hit: true };
 }
 async function openRequest(v) {
-  const a = cur(); const rec = await getRec(a.name); const r = rec.requests[v.request_index];
+  const a = cuCur(); const rec = await getRec(a.name); const r = rec.requests[v.request_index];
   if (!r) { toast(`Request [${v.request_index}] is not in the recording.`); return; }
   const { host, path } = hostPath(r.url);
   $("#dr-head").innerHTML = `<span class="lane-label" style="color:var(--sky)">[${r.i}]</span><span class="mono">${esc(r.method)} ${esc(host)}${esc(path)} → ${r.status}</span><span class="dim mono">${secs(r.at_ms)}</span><button class="x" onclick="closeDrawer()">Esc</button>`;
@@ -739,7 +773,7 @@ $("#ask").onsubmit = async (e) => {
     const h = r.route?.hit, res = r.result;
     out.innerHTML = `<div class="ask-steps">
       <div class="ask-step"><span class="label">1 · agent asks</span><span>${esc(q)}</span></div>
-      <div class="ask-step"><span class="label" style="color:var(--mint)">2 · GBrain routes</span><span class="mono">${esc(h?.slug ?? r.route?.name ?? "?")}</span><span class="dim mono">score ${h?.score != null ? (+h.score).toFixed(2) : "–"} · ${r.route_ms != null ? fmtMs(r.route_ms) : ""}</span></div>
+      <div class="ask-step"><span class="label" style="color:var(--mint)">2 · GBrain routes</span><span class="mono">${esc(h?.slug ?? r.route?.name ?? "?")}</span><span class="dim mono">best match · ${r.route_ms != null ? fmtMs(r.route_ms) : ""}</span></div>
       <div class="ask-step"><span class="label" style="color:var(--mint)">3 · Pilot calls</span><span class="mono">${esc(res?.name ?? r.route?.name ?? "")}("${esc(res?.query ?? "")}")</span><span class="dim mono">${res?.ms != null ? fmtMs(res.ms) : ""}${res?.total != null ? ` · ${res.total.toLocaleString()} matches` : ""}</span>${r.proven ? `<span class="chip ok">custos proven</span>` : r.confirmed != null ? `<span class="chip">custos ${esc(String(r.confirmed))} confirmed</span>` : ""}</div>
     </div><ol class="results ask-res">${(res?.results ?? []).map((x, i) => `<li class="row-in"><span class="n">${pad2(i + 1)}</span><span class="t">${esc(x.title)}</span><span class="d">${esc(x.detail)}</span></li>`).join("") || `<div class="empty">No results.</div>`}</ol>
     <div class="note">Question to answer in ${fmtMs(performance.now() - t0)} end to end. No browser, no model in the loop.</div>`;
@@ -768,7 +802,8 @@ function renderLibrary() {
       <div class="shared"><span class="label" style="margin-right:4px">Shared to</span>
         <span class="chip ok" title="apis/${esc(a.name)}.md, GBrain page with frontmatter">GBrain · in team memory</span>
         <span class="chip" title="Pilot exports a QM Slack tool (@pilot ${esc(a.name)}); it goes live once QM is running">QM tool exported · needs qm up</span>
-        ${p.proven ? `<span class="chip ok" title="verified-only training export">River · verified run exported</span>` : `<span class="chip off" title="River only takes runs custos fully confirmed">River · 0 verified runs</span>`}
+        ${p.proven ? `<span class="chip ok" title="verified-only training export">River · verified run exported</span>` : `<span class="chip off" title="River only takes runs custos fully confirmed">River · waiting for a fully confirmed run</span>`}
+        ${a.memorable ? `<span class="chip ok" title="memorable/${esc(a.name)}.trace.json">Memorable · trace ready</span>` : ""}
       </div></article>`;
   }).join("") || `<div class="empty">Nothing learned yet. Go to Learn.</div>`;
 }
