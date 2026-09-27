@@ -4,15 +4,17 @@
 
 A Claude Code agent searches a website once while Pilot records every request. Pilot turns the one JSON request that carried the answer into a reusable API, custos checks the agent's report against the recording, and GBrain stores both as team memory. After that, any agent on the team calls the site directly (no browser, no model) or asks GBrain which learned API answers a question.
 
-Built from scratch during hackathon hours at the YC "Own Your Intelligence" hackathon (SF, 2026-09-27), using GBrain as the memory layer and extending QM with a `@pilot` tool. Built in Superset with one lead agent and parallel sub-agents in separate workspaces.
+Built from scratch during hackathon hours at the YC "Own Your Intelligence" hackathon (SF, 2026-09-27), using GBrain as the memory layer and extending QM with a `@pilot` tool. Built in Superset with one lead agent and parallel sub-agents in separate workspaces (write-up: `docs/superset/index.html`; publishing it as a Superset page is pending Pat's CLI login).
 
 ## Screens
 
-| Race: agent vs. API | custos verdicts | Library |
-|---|---|---|
-| ![Race view](docs/screens/race.png) | ![custos](docs/screens/custos.png) | ![Library](docs/screens/library.png) |
+Captured from `bin/pilot console` at 1440×900 on venue wifi (the call time shown is live, not best-case).
 
-<!-- SCREENS: captured from `node src/cli.ts console` at 1440x900. -->
+| Race: recorded agent run vs. one live call | custos on the agent's own summary |
+|---|---|
+| ![Race view](docs/screens/race.png) | ![custos](docs/screens/custos.png) |
+| **Ask GBrain: question → learned API → answer** | **Learn: replay of the recorded agent run** |
+| ![Ask GBrain](docs/screens/ask.png) | ![Learn replay](docs/screens/learn.png) |
 
 ## What exists right now
 
@@ -45,7 +47,7 @@ These runs were not committed to `apis/`, because Pilot does not save an API tha
 |---|---|
 | Agent learning a site | 32.3 s to 66.8 s (table above) |
 | One replayed call, venue wifi | Median about 1.0–1.3 s across the call logs we checked today (338 `hn` calls: 1.29 s median; a later 107-call log: 0.99 s). Best measured about 0.2 s (172–225 ms), worst 13.3 s on a cold connection. During one slow patch of wifi, single calls took 7–8 s. |
-| 50 queries with `pilot swarm hn video/fifty.txt` | 1.1 s to 3.0 s wall time across runs (last run: 2.98 s), against about 29 min for 50 sequential agent runs at 35 s each |
+| 50 queries with `pilot swarm hn video/fifty.txt` | 1.1 s to 4.3 s wall time across runs today (last run, 16 in flight: 4.27 s), against about 29 min for 50 sequential agent runs at 35 s each |
 
 The call is one HTTP request, so its time is the network's. Against the agent's 35 s, the typical ~1.1 s call is roughly 30 times faster; the ~0.2 s figure is a best case, not typical. Call timings are logged to `apis/<name>.calls.log` (second column is ms). Those logs are local and gitignored, so a fresh clone won't have them; re-run `bin/pilot call` to measure on your own network.
 
@@ -85,7 +87,7 @@ Pilot writes to its own brain at `~/.gbrain-pilot`. Pat's default `~/.gbrain` re
 
 ### Extending QM
 
-`pilot qm` exports a QM deployment-layer tool to `qm/sandbox/tools/pilot/` (`tool.json`, a self-contained `call.mjs`, one `<name>.json` per learned API, egress limited to the API hosts). QM's own `parseToolDescriptor`, run from a yc-software/qm checkout, accepts it (`integrations/qm.md`). **It has not answered in Slack**: that needs a QM deployment (`qm init` on Fly or AWS, Slack app tokens, a model key), which we do not have.
+`pilot qm` exports a QM deployment-layer tool, committed at `qm/sandbox/tools/pilot/` (`tool.json`, a self-contained `call.mjs`, one `<name>.json` per learned API, egress limited to the API hosts). QM's own `parseToolDescriptor`, run from a yc-software/qm checkout, accepts it (`integrations/qm.md`). **It has not answered in Slack**: that needs a QM deployment (`qm init` on Fly or AWS, Slack app tokens, a model key), which we do not have.
 
 ### River
 
@@ -164,8 +166,10 @@ All code was written during hackathon hours. `git log --format='%h %ad %s' --dat
 | 14:30 | `692430e` QA fixes, verify records refusals, GBrain-routed `/api/ask`, tests |
 | 14:35 | `edb4b33` `pilot repair` |
 | 14:37 | `6cff0fd` GBrain as team memory, `pilot ask` through GBrain, MCP server, QM + River notes |
+| 14:42 | `d2c06ae` Console UI (race/swarm/custos/library/learn), devto proof, CLI usage errors |
+| 14:48 | `38b35e1` Memorable traces, QM tool export in repo, `ask` shows GBrain's top matches, bounded swarm, stopwords, local timestamps |
 
-The first code commit (14:16, about 950 lines) came from the lead agent and parallel sub-agents working in Superset workspaces; the core was restarted from scratch at about 14:10. A throwaway Python spike from the morning explored the idea; none of its code or numbers are in this repo. devto was learned at 14:38 and is not yet in a commit. Note: `learned_at` in `apis/hn.json` and `apis/yc.json` is UTC (21:16 UTC = 14:16 PDT); `judged_at` and devto's `learned_at` are local time.
+The first code commit (14:16, about 950 lines) came from the lead agent and parallel sub-agents working in Superset workspaces; the core was restarted from scratch at about 14:10. A throwaway Python spike from the morning explored the idea; none of its code or numbers are in this repo.
 
 ## Design lineage
 
@@ -194,7 +198,7 @@ The grounding guard is Pilot's own addition. We did not find an existing impleme
 - Learns only sites that fetch results with a background JSON request. Server-rendered sites fail with `NO_ANSWER_REQUEST` (Open Library). Sites that reject replayed requests fail with `BLOCKED` (npm).
 - No login support (cookies are dropped when a request is saved), one query variable, no pagination, read-only.
 - Saved headers can go stale; `verify` catches it and `repair` re-learns.
-- `swarm` sends all queries at once (`Promise.all`); there is no per-host rate cap yet.
+- `swarm` keeps at most 16 requests in flight; there is no per-host rate limit beyond that.
 - `pilot ask` has no minimum score, so a weak GBrain match still gets called, and its search-term extraction is a stop-word list. Use `--query` to set the term.
 - custos is only as good as its evidence index. It does not see rendered page state, so claims about what the page displayed often come back UNPROVEN.
 - All three working sites use a hosted search API, and it happens to be Algolia each time (hn: `uj5wyc0l7x-dsn.algolia.net`, yc: `45bwzj1sgc-dsn.algolia.net`, devto: `prsobfp46h-3.algolianet.com`; see `url` in `apis/<name>.json`). The end-request detection is not Algolia-specific, but a non-Algolia site has not been learned successfully yet: the two non-Algolia attempts, Open Library and npm, are the refusals above.

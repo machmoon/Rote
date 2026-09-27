@@ -73,8 +73,8 @@ export async function swarm(name: string, qs: string[]) {
   if (!Array.isArray(qs) || !qs.length || qs.some((q) => typeof q !== "string")) throw fail("INVALID_ARGUMENT", "swarm needs one or more string queries", name);
   const api = loadApi(name);
   const t = performance.now();
-  // bounded fan-out: at most 16 requests in flight, so a swarm is polite to the site (and to venue wifi)
-  const limit = 16; let active = 0; const waiters: (() => void)[] = [];
+  // bounded fan-out: at most 25 requests in flight, so a swarm is polite to the site (and to venue wifi)
+  const limit = 25; let active = 0; const waiters: (() => void)[] = [];
   const slot = async () => { while (active >= limit) await new Promise<void>((r) => waiters.push(r)); active++; };
   const release = () => { active--; waiters.shift()?.(); };
   const runs = await Promise.all(qs.map(async (q) => {

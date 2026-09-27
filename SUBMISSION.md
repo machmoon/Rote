@@ -24,7 +24,7 @@ custos splits the agent's summary into claims and has an LLM judge rule on each 
 
 GBrain is the team memory. Each site gets a `learned-apis/<name>` page and a `proofs/<name>` page. `pilot ask "<question>"` queries GBrain, picks the learned API and calls it. An MCP server exposes the same to any agent, and a QM tool export extends QM with `@pilot`.
 
-Measured today: three sites learned by the real agent (hn 35.0 s / 11 requests, yc 32.3 s / 17, devto 66.8 s / 19), all passing verify. A replayed call is one HTTP request: median about 1 s on venue wifi (best 172 ms, slower when the wifi is), against 32–67 s for the agent. 50 queries in a swarm took 1.1–3.0 s. custos on the agents' own summaries: hn 31 confirmed / 0 contradicted / 6 unproven, yc 56 / 1 / 2, devto 51 / 0 / 6. On devto the grounding guard fired for real, downgrading 5 verdicts whose quotes were not in the cited request. The one yc CONTRADICTED is a judge error: the page showed 40 of 162 companies, and the judge compared 40 with the request's page size of 1000. Two sites were refused honestly: Open Library (server-rendered, `NO_ANSWER_REQUEST`) and npm (replay got 403, `BLOCKED`). All three working sites happen to use Algolia-hosted search; nothing in Pilot is Algolia-specific.
+Measured today: three sites learned by the real agent (hn 35.0 s / 11 requests, yc 32.3 s / 17, devto 66.8 s / 19), all passing verify. A replayed call is one HTTP request: median about 1 s on venue wifi (best 172 ms, slower when the wifi is), against 32–67 s for the agent. 50 queries in a swarm took 1.1–4.3 s. custos on the agents' own summaries: hn 31 confirmed / 0 contradicted / 6 unproven, yc 56 / 1 / 2, devto 51 / 0 / 6. On devto the grounding guard fired for real, downgrading 5 verdicts whose quotes were not in the cited request. The one yc CONTRADICTED is a judge error: the page showed 40 of 162 companies, and the judge compared 40 with the request's page size of 1000. Two sites were refused honestly: Open Library (server-rendered, `NO_ANSWER_REQUEST`) and npm (replay got 403, `BLOCKED`). All three working sites happen to use Algolia-hosted search; nothing in Pilot is Algolia-specific.
 
 ## How it uses GBrain (required) and QM
 
@@ -40,7 +40,7 @@ TypeScript on Node 24 (no build step) · Playwright over the Chrome DevTools Pro
 
 ## Built during the hackathon
 
-Empty initial commit 13:16; core restarted from scratch about 14:10 by a lead agent and parallel sub-agents in Superset; seven commits between 14:16 and 14:37 (see README "Timeline"). A morning Python spike was thrown away; none of its code or numbers are used.
+Empty initial commit 13:16; core restarted from scratch about 14:10 by a lead agent and parallel sub-agents in Superset; nine commits between 14:16 and 14:48 (see README "Timeline"). A morning Python spike was thrown away; none of its code or numbers are used.
 
 ## What's next
 

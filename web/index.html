@@ -136,6 +136,12 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
 .delta { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 14px; font: 400 13px/18px var(--mono); text-transform: uppercase; letter-spacing: var(--track); color: var(--subtle); min-height: 18px; }
 .delta b { font-weight: 500; color: var(--mint); }
 
+.rows.race { counter-reset: r; }
+.rows.race li { counter-increment: r; }
+.rows.race li .n::before { content: counter(r, decimal-leading-zero); }
+.rows.agent-only li.req:not(.end) { display: none; }
+.rows.race li.req:not(.end) { opacity: .6; }
+.rows.race li:not(.req) .txt { font-weight: 500; }
 /* swarm */
 .swarm { margin-top: 36px; border-top: 1px solid var(--line); padding-top: 28px; }
 .swarm-top { display: flex; align-items: end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
@@ -277,13 +283,14 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
     <input class="field q" id="race-q" aria-label="query for Pilot" spellcheck="false">
     <button class="btn" id="race-go">Race <kbd>↵</kbd></button>
     <div class="seg" id="race-speed" role="group" aria-label="replay speed"><button data-s="1" class="on">1×</button><button data-s="4">4×</button></div>
+    <div class="seg" id="race-show" role="group" aria-label="left lane rows"><button data-m="agent" class="on">Agent steps</button><button data-m="all">All requests</button></div>
     <span class="note" id="race-note">Enter starts both.</span>
   </div>
   <div class="lanes">
     <div class="lane" id="lane-agent">
       <div class="lane-head"><span class="lane-label">Agent in a browser</span><span class="nums"><b id="a-steps">0</b> steps · <b id="a-reqs">0</b> requests <i id="a-state"></i></span></div>
       <div class="clock" id="a-clock">0.0s <small id="a-clock-l">recorded run</small></div>
-      <ol class="rows" id="a-rows"><div class="empty">Press Enter. The left lane replays the agent's real recorded run at its recorded timestamps: every tool call it made and every request the page sent.</div></ol>
+      <ol class="rows race agent-only" id="a-rows"><div class="empty">Press Enter. The left lane replays the agent's real recorded run at its recorded timestamps: every tool call it made and every request the page sent.</div></ol>
     </div>
     <div class="lane pilot" id="lane-pilot">
       <div class="lane-head"><span class="lane-label">Pilot call</span><span class="nums"><b id="p-n">0</b> results · <b id="p-total">–</b> matches <i id="p-state"></i></span></div>
@@ -305,7 +312,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
     </div>
     <div class="tiles" id="tiles"></div>
   </div>
-  <div class="foot">Every number is a recorded run or a live call.</div>
+  <div class="foot">Every number is a recorded run · github.com/machmoon/pilot-yc</div>
 </section>
 
 <!-- ============ CUSTOS ============ -->
@@ -337,7 +344,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
       <div class="note" id="cu-other" style="margin-top:12px"></div>
     </div>
   </div>
-  <div class="foot">Every verdict cites a recorded request. Click one to see the quote in the response.</div>
+  <div class="foot">Every number is a recorded run · github.com/machmoon/pilot-yc</div>
 </section>
 
 <!-- ============ LIBRARY ============ -->
@@ -354,7 +361,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
       <div class="ask-out" id="ask-out"></div></form>
   </div>
   <div class="cards" id="cards"></div>
-  <div class="foot">Every number is a recorded run or a logged call.</div>
+  <div class="foot">Every number is a recorded run · github.com/machmoon/pilot-yc</div>
 </section>
 
 <!-- ============ LEARN ============ -->
@@ -376,7 +383,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
     <div class="lane"><div class="lane-head"><span class="lane-label">Recorded requests</span><span class="nums"><b id="ln-nreqs">0</b> requests · <b id="ln-njson">0</b> json</span></div><ol class="rows" id="ln-reqs"></ol></div>
   </div>
   <div class="learned" id="ln-out"></div>
-  <div class="foot">Recorded over CDP. The recording is the proof custos checks later.</div>
+  <div class="foot">Every number is a recorded run · github.com/machmoon/pilot-yc</div>
 </section>
 </main>
 
@@ -421,8 +428,9 @@ function show(v) {
   if (v === "custos") loadCustos();
 }
 $$(".tab").forEach((t) => t.onclick = () => show(t.dataset.view));
+document.addEventListener("change", (e) => { if (e.target.tagName === "SELECT") e.target.blur(); });
 document.addEventListener("keydown", (e) => {
-  if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+  if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) { if (e.key === "Escape") document.activeElement.blur(); return; }
   const m = { 1: "race", 2: "custos", 3: "library", 4: "learn" }[e.key];
   if (m && !e.metaKey && !e.ctrlKey) show(m);
   if (e.key === "Escape") closeDrawer();
@@ -445,6 +453,7 @@ const cur = () => STATE.apis.find((a) => a.name === CUR);
 
 // ================= RACE =================
 let speed = 1, racing = false, raf = 0;
+$$("#race-show button").forEach((b) => b.onclick = () => { b.blur(); $$("#race-show button").forEach((x) => x.classList.toggle("on", x === b)); $("#a-rows").classList.toggle("agent-only", b.dataset.m === "agent"); const l = $("#a-rows"); l.scrollTop = l.scrollHeight; });
 $$("#race-speed button").forEach((b) => b.onclick = () => { b.blur(); speed = +b.dataset.s; $$("#race-speed button").forEach((x) => x.classList.toggle("on", x === b)); setRaceNote(); });
 const setRaceNote = () => $("#race-note").textContent = speed === 1 ? "Enter starts both · replay in real time" : `Enter starts both · replaying the recorded run at ${speed}×`;
 
@@ -514,15 +523,15 @@ async function startRace() {
       const e = evs[k++], li = document.createElement("li"); li.className = "row-in";
       if (e.kind === "step") {
         const [label, cls] = toolOf(e.s.tool); steps++;
-        li.innerHTML = `<span class="n">${pad2(++n)}</span><span class="tool ${cls}">${esc(label)}</span><span class="txt">${esc(e.s.arg || "page")}</span><span class="at">${secs(e.at)}</span>`;
+        li.innerHTML = `<span class="n"></span><span class="tool ${cls}">${esc(label)}</span><span class="txt">${esc(e.s.arg || "page")}</span><span class="at">${secs(e.at)}</span>`;
       } else if (e.kind === "req") {
         const { host, path } = hostPath(e.r.url); reqs++;
         const isEnd = e.r.i === rec.end;
         li.classList.add("req"); if (e.r.resp) li.classList.add("json"); if (isEnd) li.classList.add("end");
-        li.innerHTML = `<span class="n">${pad2(++n)}</span><span class="tool ${isEnd ? "mint" : "sky"}">${esc(e.r.method)} ${e.r.status}</span><span class="txt"><span class="host">${esc(host)}</span>${esc(path)}</span>${isEnd ? `<span class="flag">the answer</span>` : ""}<span class="at">${secs(e.at)}</span>`;
+        li.innerHTML = `<span class="n"></span><span class="tool ${isEnd ? "mint" : "sky"}">${esc(e.r.method)} ${e.r.status}</span><span class="txt"><span class="host">${esc(host)}</span>${esc(path)}</span>${isEnd ? `<span class="flag">the answer</span>` : ""}<span class="at">${secs(e.at)}</span>`;
       } else {
         li.className = "fin row-in";
-        li.innerHTML = `<span class="n">${pad2(++n)}</span><span class="tool mint">answer</span><span class="txt">agent wrote its summary</span><span class="at">${secs(e.at)}</span>`;
+        li.innerHTML = `<span class="n"></span><span class="tool mint">answer</span><span class="txt">agent wrote its summary</span><span class="at">${secs(e.at)}</span>`;
         aDone = true;
       }
       list.appendChild(li); list.scrollTop = list.scrollHeight;
@@ -758,8 +767,8 @@ function renderLibrary() {
       <div><div class="label" style="margin-bottom:6px">Templated request · learned from "${esc(a.learned_query)}"${v ? ` · probe "${esc(v.probe_query)}" ${v.differs ? "returned different results" : "did not differ"}` : ""}</div><div class="code">${templHtml(a, "{query}")}</div></div>
       <div class="shared"><span class="label" style="margin-right:4px">Shared to</span>
         <span class="chip ok" title="apis/${esc(a.name)}.md, GBrain page with frontmatter">GBrain · in team memory</span>
-        <span class="chip ok" title="QM Slack tool">QM · @pilot ${esc(a.name)}</span>
-        ${p.proven ? `<span class="chip ok" title="verified-only training export">River · training export</span>` : `<span class="chip off" title="River only takes runs custos fully confirmed">River · needs custos proof</span>`}
+        <span class="chip" title="Pilot exports a QM Slack tool (@pilot ${esc(a.name)}); it goes live once QM is running">QM tool exported · needs qm up</span>
+        ${p.proven ? `<span class="chip ok" title="verified-only training export">River · verified run exported</span>` : `<span class="chip off" title="River only takes runs custos fully confirmed">River · 0 verified runs</span>`}
       </div></article>`;
   }).join("") || `<div class="empty">Nothing learned yet. Go to Learn.</div>`;
 }
@@ -780,6 +789,7 @@ function lnEvent(e) {
     const ul = $("#ln-steps"), [label, cls] = toolOf(e.step.tool), n = ul.children.length + 1;
     ul.insertAdjacentHTML("beforeend", `<li class="row-in"><span class="n">${pad2(n)}</span><span class="tool ${cls}">${esc(label)}</span><span class="txt">${esc(e.step.arg || "page")}</span><span class="at">${secs(e.step.at_ms)}</span></li>`);
     $("#ln-nsteps").textContent = n; ul.scrollTop = ul.scrollHeight;
+    lnStatus(`Agent: ${esc(label)} ${esc(e.step.arg || "page")} · recording every request`);
   } else if (e.type === "request") {
     const ul = $("#ln-reqs"), r = e.req, { host, path } = hostPath(r.url);
     ul.insertAdjacentHTML("beforeend", `<li class="row-in req ${r.json ? "json" : ""}" data-i="${r.i}"><span class="n">${pad2(r.i)}</span><span class="tool ${r.json ? "sky" : ""}">${esc(r.method)} ${r.status}</span><span class="txt"><span class="host">${esc(host)}</span>${esc(path)}</span>${r.json ? `<span class="flag dim" style="font-size:11px;letter-spacing:.12em">JSON</span>` : ""}<span class="at">${secs(r.at_ms)}</span></li>`);

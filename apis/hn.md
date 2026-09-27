@@ -4,7 +4,7 @@ type: learned-api
 tags: [learned-api, search, hn]
 site: https://hn.algolia.com/
 method: POST
-learned: 2026-09-27 21:16
+learned: 2026-09-27 14:16
 driver: claude
 ---
 

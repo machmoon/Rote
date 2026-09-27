@@ -17,12 +17,12 @@ Run everything from the repo root. Expected values are from runs earlier today; 
 | 1 | 0:00 | console Race view (hn, 4×), press Enter | "Agents click through the same websites every session, and nobody checks what they report. This is a real Claude Code agent learning HN search earlier today, replayed from its recording." | Left lane replays the agent's recorded run (35 s, 11 requests, from `apis/hn.recording.json`; no browser starts); the right lane makes one live call. The Learn tab's "Replay a saved run" shows the same recording step by step |
 | 2 | 0:15 | `bin/pilot list` | "A real Claude Code agent learned these three sites today." | hn, yc, devto rows with proof status (hn 31/37, yc 56/59, devto 51/57) |
 | 3 | 0:20 | `bin/pilot call hn "rust async"` | "Same site, new question, no browser, no model." | Top results with points. Median about 1 s; 7–8 s seen during a slow wifi patch. If slow, say "one request, no browser; the time is the wifi" |
-| 4 | 0:30 | `bin/pilot swarm hn video/fifty.txt` | "Fifty queries at once. The agent would need about half an hour." | "50 searches in ~1–3 s vs ~29.2 min for the agent" |
+| 4 | 0:30 | `bin/pilot swarm hn video/fifty.txt` | "Fifty queries at once. The agent would need about half an hour." | "50 searches in ~1–4 s vs ~29.2 min for the agent" |
 | 5 | 0:45 | `bin/pilot custos hn "The top story is 'Claude Code is steganographically marking requests'" "It has 2845 points" "I emailed the results to the team"` | "Confirmed, with the request it came from. Contradicted: the recording says 2445. Unproven: no request ever sent an email." | CONFIRMED / CONTRADICTED / UNPROVEN, each citing `[n] "quote"` |
 | 6 | 1:05 | `bin/pilot ask "startups in the yc directory doing robotics"` | "GBrain is the team memory. The agent asking doesn't know which site to use. GBrain picks the learned API, Pilot calls it." | `gbrain → learned-apis/yc (score ~1.0, ~570 ms)` then robotics companies |
 | 7 | 1:20 | `GBRAIN_HOME=~/.gbrain-pilot gbrain list` | "Every learned API and every proof is a GBrain page. Learn it once, prove it, call it forever." | `learned-apis/*` and `proofs/*` for hn, yc, devto |
 
-Measured timings: custos on 3 claims took 14.3 s in rehearsal (run it in pre-flight and show the result if pressed), `ask` 1.1–2.1 s, swarm of 50 1.1–3.0 s. Optional, only with spare time: `bin/pilot learn <new-name> <url> "<query>"` shows the agent live; it takes 30–70 s.
+Measured timings: custos on 3 claims took 14.3 s in rehearsal (run it in pre-flight and show the result if pressed), `ask` 1.1–2.1 s, swarm of 50 1.1–4.3 s. Optional, only with spare time: `bin/pilot learn <new-name> <url> "<query>"` shows the agent live; it takes 30–70 s.
 
 ## If something fails
 
