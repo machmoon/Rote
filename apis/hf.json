@@ -1,0 +1,37 @@
+{
+ "name": "hf",
+ "site": "https://huggingface.co/",
+ "method": "GET",
+ "url": "https://huggingface.co/api/quicksearch?q={query:raw}&type=model&type=dataset&type=space&type=org&type=user",
+ "body": "",
+ "headers": {
+  "accept": "*/*",
+  "accept-language": "en-US,en;q=0.9",
+  "if-none-match": "W/\"a3d-B5EUaC39fefSrJLMYW+Zfeo9MKA\"",
+  "priority": "u=1, i",
+  "referer": "https://huggingface.co/",
+  "sec-ch-ua": "\"Google Chrome\";v=\"153\", \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"153\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-ch-ua-platform": "\"macOS\"",
+  "sec-fetch-dest": "empty",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-site": "same-origin",
+  "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36",
+  "x-request-id": "Root=1-6ab98f5c-14261c8406fb9fc478bd26da;4f1ac38d-1806-4979-99b2-c5a4c552fee9"
+ },
+ "learned_query": "qwen",
+ "driver": "claude",
+ "browser_seconds": 82,
+ "requests_seen": 39,
+ "learned_at": "2026-09-27 14:50",
+ "verified": {
+  "ok": true,
+  "checked_at": "2026-09-27 14:54",
+  "learned_query_results": 11,
+  "probe_query": "python",
+  "probe_results": 12,
+  "differs": true,
+  "problems": []
+ },
+ "about": "Hugging Face – The AI community building the future. — We’re on a journey to advance and democratize artificial intelligence through open source and open science."
+}

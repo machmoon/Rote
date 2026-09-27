@@ -44,7 +44,9 @@ export function items(data: unknown, n = 5): Result[] {
   const walk = (o: any) => {
     if (out.length >= n || !o || typeof o !== "object") return;
     if (Array.isArray(o)) return o.forEach(walk);
-    const t = text(o.title) || text(o.name);
+    // a human-readable label: title/name, else a readable string id like "Qwen/Qwen3-8B" (never a hex/uuid key)
+    const readable = (v: unknown) => typeof v === "string" && /[a-z]/i.test(v) && !/^[0-9a-f-]{16,}$/i.test(v) ? v : "";
+    const t = text(o.title) || text(o.name) || readable(o.full_name) || readable(o.id);
     const hasId = ["videoId", "objectID", "id", "slug", "url"].some((k) => k in o);
     if (t && hasId && t.length > 2 && !seen.has(t)) {
       seen.add(t);

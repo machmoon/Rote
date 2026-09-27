@@ -1,0 +1,203 @@
+{
+ "name": "hf",
+ "judged_at": "2026-09-27 14:56",
+ "claims_from": "summary",
+ "judge": "llm",
+ "requests": 39,
+ "verdicts": [
+  {
+   "claim": "The agent searched via the site's search box.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No evidence entry shows which UI element triggered the search."
+  },
+  {
+   "claim": "The agent used the 'Use Full-text search' option.",
+   "verdict": "UNPROVEN",
+   "request_index": 30,
+   "quote": "GET https://huggingface.co/search/full-text?q=qwen -> 200",
+   "reason": "downgraded: the judge cited [30] \"GET https://huggingface.co/search/full-t\", which is not in that request",
+   "grounded": false
+  },
+  {
+   "claim": "The URL used was huggingface.co/search/full-text?q=qwen.",
+   "verdict": "CONFIRMED",
+   "request_index": 30,
+   "quote": "https://huggingface.co/search/full-text?q=qwen",
+   "reason": "Matches the URL recorded in entry 30.",
+   "grounded": true
+  },
+  {
+   "claim": "The full-text search for 'qwen' returned a total of 512,651 results.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "Entry 30's response body is not included in evidence, so the result count cannot be verified."
+  },
+  {
+   "claim": "The top model results were each shown as README.md file matches.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No response body for the full-text search is available to verify this."
+  },
+  {
+   "claim": "All of the top model results are of type 'model'.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No response body for the full-text search is available to verify this."
+  },
+  {
+   "claim": "The repo Qwen/Qwen3.8-Flash-Next had 64 matches.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No match-count data is present in any recorded response."
+  },
+  {
+   "claim": "The repo Qwen/Qwen3.8-27B had 57 matches.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No match-count data is present in any recorded response."
+  },
+  {
+   "claim": "The repo Qwen/Qwen3.8-2.4T-A95B had 53 matches.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No match-count data is present in any recorded response."
+  },
+  {
+   "claim": "The repo Qwen/Qwen3.6-27B had 107 matches.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No match-count data is present in any recorded response."
+  },
+  {
+   "claim": "The repo Qwen/Qwen3.6-35B-A3B had 107 matches.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No match-count data is present in any recorded response."
+  },
+  {
+   "claim": "The repo Qwen/Qwen3-8B had 51 matches.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No match-count data is present in any recorded response."
+  },
+  {
+   "claim": "The repo Qwen/Qwen3-ASR-1.7B had 177 matches.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No match-count data is present in any recorded response."
+  },
+  {
+   "claim": "The repo Qwen/Qwen3.5-9B had 101 matches.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No match-count data is present in any recorded response."
+  },
+  {
+   "claim": "The repo Qwen/Qwen3.5-4B had 101 matches.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No match-count data is present in any recorded response."
+  },
+  {
+   "claim": "The repo Qwen/Qwen3-Coder-Next had 32 matches.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No match-count data is present in any recorded response."
+  },
+  {
+   "claim": "Each result shows the model's tags line.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No response body for the full-text search page is available to verify this."
+  },
+  {
+   "claim": "An example tags line shown is: transformers, safetensors, ... license:..., eval-results, endpoints_compatible, region:us.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No such tags data appears in any recorded evidence."
+  },
+  {
+   "claim": "Each result shows a snippet from its README.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No response body for the full-text search page is available to verify this."
+  },
+  {
+   "claim": "An example README snippet shown is '# Qwen3.6-27B'.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No such snippet appears in any recorded evidence."
+  },
+  {
+   "claim": "Another example README snippet shown is '## Qwen3.6 Highlights'.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No such snippet appears in any recorded evidence."
+  },
+  {
+   "claim": "Another example README snippet shown includes benchmark image links.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No such content appears in any recorded evidence."
+  },
+  {
+   "claim": "The initial dropdown autocomplete appeared before switching to full-text search.",
+   "verdict": "CONFIRMED",
+   "request_index": 29,
+   "quote": "q\":\"qwen\"",
+   "reason": "Quicksearch (dropdown) request at 29 for 'qwen' precedes the full-text search request at 30.",
+   "grounded": true
+  },
+  {
+   "claim": "The initial dropdown autocomplete showed Qwen/Qwen-Image-2.1 as a top match.",
+   "verdict": "CONFIRMED",
+   "request_index": 29,
+   "quote": "{\"id\":\"Qwen/Qwen-Image-2.1\",\"trendingWeight\":1,\"private\":false}",
+   "reason": "Listed as the first model result in the quicksearch response.",
+   "grounded": true
+  },
+  {
+   "claim": "Qwen/Qwen-Image-2.1 had 52.8k downloads.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No download counts are present in the quicksearch response or elsewhere in evidence."
+  },
+  {
+   "claim": "Qwen/Qwen-Image-2.1 had 2.48k likes.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No like counts are present in the quicksearch response or elsewhere in evidence."
+  },
+  {
+   "claim": "The initial dropdown autocomplete also showed the Qwen organization page as a top match.",
+   "verdict": "CONFIRMED",
+   "request_index": 29,
+   "quote": "\"fullname\":\"Qwen\",\"name\":\"Qwen\"",
+   "reason": "Qwen org is listed first among orgs in the quicksearch response.",
+   "grounded": true
+  }
+ ]
+}
