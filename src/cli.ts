@@ -24,6 +24,7 @@ ${dim("CORE")}
 ${dim("PROVE")}
   pilot custos <name> "<claim>" ... | --summary  CONFIRMED / CONTRADICTED / UNPROVEN, each citing a recorded request [--rules offline]
   pilot verify <name>                            replay with the learned query and a probe; results must exist and differ
+  pilot repair <name>                            if verify fails (site changed), the agent re-learns the site
 ${dim("LOOK")}
   pilot list                                     learned APIs, proof status, calls, time saved
   pilot console [--port 4321]                    the live console (race, recordings, custos)
@@ -80,6 +81,16 @@ async function main(a: string[]) {
       const n = (k: string) => r.verdicts.filter((v) => v.verdict === k).length, s = { confirmed: n("CONFIRMED"), contradicted: n("CONTRADICTED"), unproven: n("UNPROVEN") };
       console.log(`\n  ${green(`${s.confirmed} confirmed`)} · ${red(`${s.contradicted} contradicted`)} · ${grey(`${s.unproven} unproven`)}  ${dim(`against ${r.requests} recorded requests`)}`);
       await page(name);
+      break;
+    }
+    case "repair": {
+      // Cqctxs/Pilot src/cli/repair.ts idea: reproduce the failure first; a working API is not "repaired"
+      const api = loadApi(args[0]);
+      const v = await verify(api);
+      if (v.ok) { console.log(green(`✓ ${args[0]} still works ("${api.learned_query}" → ${v.learned_query_results} results); nothing to repair`)); break; }
+      console.log(red(`✗ ${args[0]} is broken: ${v.problems.join("; ")}`) + `\n${amber("● ")}sending the agent back to ${api.site} to re-learn "${api.learned_query}"…`);
+      await main(["learn", api.name, api.site, api.learned_query, ...(api.driver === "typer" ? ["--typer"] : [])]);
+      console.log(dim(`then prove the new run: pilot custos ${api.name} --summary`));
       break;
     }
     case "verify": {
