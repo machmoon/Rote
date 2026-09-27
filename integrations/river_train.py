@@ -51,7 +51,7 @@ def main():
     data = [renderer.build_training_example(r["messages"], train_on=TrainOnWhat.LAST_ASSISTANT).to_dict() for r in rows]
     for r, d in zip(rows, data):
         trained = sum(1 for w in d["weights"] if w > 0)
-        print(f"  {r.get('source', '?'):8} custos {r.get('custos', '?'):>7}  {len(d['input_ids'])} tokens, {trained} trained")
+        print(f"  {r.get('source', '?'):8} custos {r.get('custos', '?'):>7}  {len(d['weights'])} tokens, {trained} trained")
 
     key = os.environ.get("RIVER_API_KEY")
     if not key:

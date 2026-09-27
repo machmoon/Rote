@@ -174,7 +174,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
 .CONTRADICTED .vbadge { color: var(--red); border-color: color-mix(in srgb, var(--red) 50%, transparent); background: color-mix(in srgb, var(--red) 10%, transparent); }
 .UNPROVEN .vbadge { color: var(--muted); border-color: var(--border-strong); }
 .vcite { margin-top: 8px; font: 400 14px/20px var(--mono); color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
-.vcite .i { color: var(--sky); } .vcite q { color: var(--fg); background: var(--cell); padding: 1px 6px; border-radius: 3px; quotes: '"' '"'; }
+.vcite .i { color: var(--sky); } .vcite q { color: var(--fg); background: var(--cell); padding: 1px 6px; border-radius: 3px; quotes: none; }
 .vreason { margin-top: 6px; color: var(--subtle); font-size: 14px; line-height: 20px; }
 .vguard { font: 400 11px/14px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mint); }
 .vguard.off { color: var(--amber); }
@@ -185,7 +185,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
 .judging .sec { margin-left: auto; font: 500 22px/26px var(--mono); font-variant-numeric: tabular-nums; color: var(--sky); }
 .skel { height: 74px; border-radius: 6px; border: 1px solid var(--line-fade); background: linear-gradient(90deg, var(--surface) 0%, var(--surface-2) 50%, var(--surface) 100%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
 @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-.tally { display: flex; gap: 18px; font: 400 13px/18px var(--mono); text-transform: uppercase; letter-spacing: .12em; }
+.tally { display: flex; gap: 6px 18px; flex-wrap: wrap; justify-content: flex-end; white-space: nowrap; font: 400 13px/18px var(--mono); text-transform: uppercase; letter-spacing: .12em; }
 
 /* drawer */
 .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 40; display: none; }
@@ -202,7 +202,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
 /* library */
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 16px; margin-top: 22px; }
 .card { border: 1px solid var(--border); border-radius: 6px; background: var(--surface); padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
-.card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.card-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
 .card h3 { margin: 0; font: 500 28px/32px var(--ui); letter-spacing: -.03em; }
 .card .site { font: 400 14px/20px var(--mono); color: var(--muted); }
 .card .about { color: var(--muted); font-size: 15px; margin-top: 2px; }
@@ -215,7 +215,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
 .metric .k { font: 400 11px/14px var(--mono); text-transform: uppercase; letter-spacing: var(--track); color: var(--subtle); }
 .metric .v { font: 500 26px/32px var(--ui); letter-spacing: -.03em; font-variant-numeric: tabular-nums; margin-top: 4px; }
 .code { font: 400 13px/20px var(--mono); background: var(--canvas); border: 1px solid var(--line-fade); border-radius: 4px; padding: 12px 14px; color: var(--muted); word-break: break-all; max-height: 150px; overflow: auto; }
-.code .m { color: var(--sky); } .code .ph { color: var(--mint); background: color-mix(in srgb, var(--mint) 12%, transparent); border-radius: 2px; padding: 0 2px; }
+.code .m, .req-card .m { color: var(--sky); margin-right: 8px; } .code .ph { color: var(--mint); background: color-mix(in srgb, var(--mint) 12%, transparent); border-radius: 2px; padding: 0 2px; }
 .shared { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
 .gbrain { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 22px; padding: 18px 22px; border: 1px solid color-mix(in srgb, var(--mint) 40%, transparent); border-radius: 6px; background: color-mix(in srgb, var(--mint) 5%, var(--surface)); }
@@ -642,10 +642,12 @@ function renderVerdicts(v, rec, other) {
   const o = otherSet && otherSet !== v ? otherSet.verdicts : null;
   $("#cu-other").innerHTML = o?.length ? `Also saved: ${otherSet.claims_from === "summary" ? "the agent's full summary" : "a check of hand-written claims"}, judged ${esc(otherSet.judged_at)}: <b class="good">${o.filter((x) => x.verdict === "CONFIRMED").length}/${o.length} confirmed</b>, <b class="bad">${o.filter((x) => x.verdict === "CONTRADICTED").length} contradicted</b>. <a href="#" id="cu-show-other">Show</a>` : "";
   const so = $("#cu-show-other"); if (so) so.onclick = (e) => { e.preventDefault(); const cur = v; renderVerdicts(otherSet, rec, cur); };
-  $("#cu-verdicts").innerHTML = list.map((x, i) => {
+  const RANK = { CONTRADICTED: 0, CONFIRMED: 1, UNPROVEN: 2 };
+  const order = list.map((x, i) => [x, i]).sort((p, q) => RANK[p[0].verdict] - RANK[q[0].verdict] || p[1] - q[1]);
+  $("#cu-verdicts").innerHTML = order.map(([x, i], k) => {
     const can = x.request_index != null;
     const guard = x.grounded === true ? `<span class="vguard">quote verified in [${x.request_index}]</span>` : x.grounded === false ? `<span class="vguard off">grounding guard: downgraded</span>` : "";
-    return `<div class="vcard ${x.verdict}${can ? " click" : ""}" data-i="${i}" style="animation-delay:${i * 60}ms" ${can ? 'tabindex="0" role="button"' : ""}>
+    return `<div class="vcard ${x.verdict}${can ? " click" : ""}" data-i="${i}" style="animation-delay:${Math.min(k, 12) * 50}ms" ${can ? 'tabindex="0" role="button"' : ""}>
       <div class="vtop"><div class="vclaim">${esc(x.claim)}</div><span class="vbadge">${x.verdict}</span></div>
       ${can || x.quote ? `<div class="vcite">${can ? `<span class="i">[${x.request_index}]</span>` : ""}${x.quote ? `<q>${esc(x.quote)}</q>` : ""}${guard}</div>` : guard ? `<div class="vcite">${guard}</div>` : ""}
       <div class="vreason">${esc(x.reason)}</div></div>`;
@@ -690,7 +692,7 @@ async function openRequest(v) {
   if (!r) { toast(`Request [${v.request_index}] is not in the recording.`); return; }
   const { host, path } = hostPath(r.url);
   $("#dr-head").innerHTML = `<span class="lane-label" style="color:var(--sky)">[${r.i}]</span><span class="mono">${esc(r.method)} ${esc(host)}${esc(path)} → ${r.status}</span><span class="dim mono">${secs(r.at_ms)}</span><button class="x" onclick="closeDrawer()">Esc</button>`;
-  let pretty = r.resp; try { pretty = JSON.stringify(JSON.parse(r.resp), null, 2); } catch {}
+  let pretty = r.resp; try { pretty = JSON.stringify(JSON.parse(r.resp), null, 2); } catch { pretty = r.resp.replaceAll("},{", "},\n\n{"); } // trimmed JSON won't parse
   let h = highlight(pretty, v.quote); if (!h.hit) { const raw = highlight(r.resp, v.quote); if (raw.hit) h = raw; }
   $("#dr-body").innerHTML = `
     <div class="vcard ${v.verdict}" style="margin-bottom:16px;cursor:default"><div class="vtop"><div class="vclaim">${esc(v.claim)}</div><span class="vbadge">${v.verdict}</span></div>${v.quote ? `<div class="vcite"><q>${esc(v.quote)}</q>${h.hit ? '<span class="vguard">found below</span>' : '<span class="vguard off">quote not in the trimmed view</span>'}</div>` : ""}</div>
@@ -727,8 +729,8 @@ function renderLibrary() {
     const drv = a.driver === "claude" ? "Claude agent" : a.driver;
     const proofChip = p.claims ? `<span class="chip ${p.proven ? "ok" : p.contradicted ? "bad" : ""}">custos ${p.confirmed}/${p.claims} confirmed</span>` : `<span class="chip off">custos: not checked</span>`;
     return `<article class="card">
-      <div class="card-top"><div><h3>${esc(a.name)}</h3><div class="site">${esc(a.site)}</div>${a.about ? `<div class="about">${esc(a.about)}</div>` : ""}</div>
-        <div class="chips" style="justify-content:flex-end"><span class="chip">driver · ${esc(drv)}</span>${v ? `<span class="chip ${v.ok ? "ok" : "bad"}" title="${esc(`learned query: ${v.learned_query_results} results · probe "${v.probe_query}": ${v.probe_results} results${v.problems?.length ? " · " + v.problems.join("; ") : ""}`)}">${v.ok ? "✓ verified" : "✗ verify failed"}</span>` : `<span class="chip off">unverified</span>`}${proofChip}</div></div>
+      <div><div class="card-top"><h3>${esc(a.name)}</h3><div class="site">${esc(a.site)}</div></div>${a.about ? `<div class="about">${esc(a.about)}</div>` : ""}</div>
+        <div class="chips"><span class="chip">driver · ${esc(drv)}</span>${v ? `<span class="chip ${v.ok ? "ok" : "bad"}" title="${esc(`learned query: ${v.learned_query_results} results · probe "${v.probe_query}": ${v.probe_results} results${v.problems?.length ? " · " + v.problems.join("; ") : ""}`)}">${v.ok ? "✓ verified" : "✗ verify failed"}</span>` : `<span class="chip off">unverified</span>`}${proofChip}</div>
       <div class="metrics">
         <div class="metric"><div class="k">Browser run</div><div class="v">${a.browser_seconds}s</div></div>
         <div class="metric"><div class="k">Avg call</div><div class="v good">${a.avg_call_ms ? fmtMs(a.avg_call_ms) : "–"}</div></div>

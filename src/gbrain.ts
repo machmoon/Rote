@@ -97,14 +97,29 @@ export async function route(question: string): Promise<{ name: string; hit: Hit;
   return { name: hits[0].slug.slice(13), hit: hits[0], hits };
 }
 
-const STOP = new Set("a an and any are about at be by can com companies company do does doing for from find get give has have how i in is it latest list look me most new of on or recent say saying says search searching show some startup startups tell that the their them there these this to top up what whats what's which who why with www".split(" "));
+// Filler (question words, verbs of asking) and generic result nouns: none of them is ever what the user is searching for.
+const STOP = new Set(("a an and any are about at be best by can could do does doing for from find get give has have how i in is it " +
+  "latest list look looking me most my new newest of on or please popular recent say saying says search searching show some tell that the " +
+  "their them there these this to top up what whats which who why with would you " +
+  "post posts story stories article articles result results item items thread threads link links discussion discussions " +
+  "company companies startup startups video videos page pages site sites website websites directory api apis").split(" "));
 
-/** Turn a question into the search term: drop filler words and the words that name the site (from its page). */
+const norm = (w: string) => w.toLowerCase().replace(/[\u2019']s$/, "").replace(/[^a-z0-9+#.-]/g, "").replace(/^[.-]+|[.-]+$/g, "");
+
+/** Pure core of searchTerm: keep the content words that are neither filler nor words naming the site itself. */
+export function termFrom(question: string, siteText: string): string {
+  const site = new Set(siteText.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 1));
+  const words = question.split(/\s+/).map((w) => [w, norm(w)] as const).filter(([, k]) => k);
+  const kept = words.filter(([, k]) => !STOP.has(k) && !site.has(k)).map(([w]) => w.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}+#]+$/gu, ""));
+  if (kept.length) return kept.join(" ");
+  const last = [...words].reverse().find(([, k]) => !STOP.has(k)) ?? words.at(-1);
+  return last ? last[1] : question.trim();
+}
+
+/** Turn a question into the search term for the routed API, using the site's name, host and description as site words. */
 export function searchTerm(question: string, name: string): string {
   const a = loadApi(name);
-  const site = new Set(`${name} ${a.site} ${a.about ?? ""} search api directory site website`.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 1));
-  const words = question.split(/\s+/).filter((w) => { const k = w.toLowerCase().replace(/[^a-z0-9']/g, ""); return k && !STOP.has(k) && !site.has(k); });
-  return (words.join(" ").replace(/[?!.,]+$/, "") || question).trim();
+  return termFrom(question, `${name} ${a.site} ${a.about ?? ""}`);
 }
 
 export async function ask(question: string, opts: { query?: string } = {}): Promise<{ route: Awaited<ReturnType<typeof route>>; route_ms: number; result: CallResult; proven: boolean; confirmed: string }> {

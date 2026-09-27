@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pilot — learn it once, prove it, call it forever</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" />
+<style>
+:root {
+  --bg: #0a0a0b; --surface: #111113; --surface-2: #1a1a1d;
+  --line: rgba(255,255,255,.12); --line-fade: rgba(255,255,255,.06);
+  --fg: #fff; --muted: rgb(172,172,172); --subtle: rgb(138,138,138); --cell: rgba(255,255,255,.04);
+  --sky: #38bdf8; --mint: #3ddc97; --red: #f0616d; --amber: #e9b949;
+  --ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --track: .16em; --ease: cubic-bezier(.2,0,0,1);
+  --sp-bg: var(--bg); --sp-surface: var(--surface); --sp-text: var(--fg); --sp-muted: var(--muted);
+  --sp-border: var(--line); --sp-accent: var(--sky); --sp-font-sans: var(--ui); --sp-font-mono: var(--mono);
+}
+* { box-sizing: border-box; }
+body.dark { margin: 0; background: var(--bg); color: var(--fg); font: 400 16px/24px var(--ui); -webkit-font-smoothing: antialiased; }
+a { color: var(--sky); text-underline-offset: 3px; }
+code, .mono { font-family: var(--mono); }
+code { font-size: .88em; background: var(--cell); border: 1px solid var(--line-fade); border-radius: 4px; padding: 1px 5px; }
+.good { color: var(--mint); } .bad { color: var(--red); } .warn { color: var(--amber); } .dim { color: var(--subtle); }
+.label { font: 400 12px/16px var(--mono); text-transform: uppercase; letter-spacing: var(--track); color: var(--subtle); }
+
+.top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 20px; height: 56px; padding: 0 40px; border-bottom: 1px solid var(--line); background: rgba(10,10,11,.92); backdrop-filter: blur(8px); }
+.top .brand { font: 600 18px/24px var(--ui); letter-spacing: -.02em; }
+.top .tag { font: 400 11px/16px var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--muted); border: 1px solid var(--line); border-radius: 3px; padding: 3px 8px; }
+.top nav { margin-left: auto; display: flex; gap: 18px; overflow-x: auto; }
+.top nav a { font: 400 12px/16px var(--mono); text-transform: uppercase; letter-spacing: var(--track); color: var(--subtle); text-decoration: none; white-space: nowrap; }
+.top nav a:hover { color: var(--fg); }
+
+main { max-width: 1200px; margin: 0 auto; padding: 0 40px 80px; }
+section { padding: 72px 0 0; }
+.eyebrow { font: 400 13px/18px var(--mono); text-transform: uppercase; letter-spacing: var(--track); color: var(--sky); margin: 0 0 14px; }
+h1.hero { font: 500 52px/60px var(--ui); letter-spacing: -.035em; margin: 0 0 20px; max-width: 16ch; }
+h1.hero em { font-style: normal; color: var(--mint); }
+.lede { color: var(--muted); font-size: 20px; line-height: 31px; max-width: 62ch; margin: 0; }
+h2 { font: 500 32px/40px var(--ui); letter-spacing: -.025em; margin: 0 0 10px; }
+h3 { font: 600 16px/24px var(--ui); margin: 0 0 6px; }
+.sub { color: var(--muted); max-width: 70ch; margin: 0 0 28px; }
+p { max-width: 72ch; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 44px; }
+.stat { background: var(--surface); padding: 22px 24px 20px; }
+.stat .big { font: 500 40px/48px var(--ui); letter-spacing: -.03em; margin: 10px 0 6px; font-variant-numeric: tabular-nums; }
+.stat .big small { font-size: 18px; color: var(--subtle); letter-spacing: 0; margin: 0 6px; }
+.stat .note { font-size: 14px; line-height: 20px; color: var(--muted); }
+.stat .src { font: 400 11px/16px var(--mono); color: var(--subtle); margin-top: 12px; }
+
+/* race */
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; }
+button { font: 500 13px/16px var(--mono); color: var(--fg); background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 9px 14px; cursor: pointer; }
+button:hover { border-color: rgba(255,255,255,.3); }
+button.on { border-color: var(--sky); color: var(--sky); }
+button.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.replay-tag { font: 400 12px/16px var(--mono); text-transform: uppercase; letter-spacing: .12em; color: var(--amber); margin-left: auto; }
+.race { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; }
+.lane { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; display: flex; flex-direction: column; min-width: 0; }
+.lane header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.lane header h3 { margin: 0; }
+.clock { white-space: nowrap; font: 500 28px/32px var(--mono); font-variant-numeric: tabular-nums; }
+.bar { height: 3px; background: var(--line-fade); }
+.bar i { display: block; height: 100%; width: 0; background: var(--sky); }
+.lane.pilot .bar i { background: var(--mint); }
+.feed { list-style: none; margin: 0; padding: 8px 0; height: 440px; overflow-y: auto; font: 400 12.5px/18px var(--mono); }
+.feed li { display: grid; grid-template-columns: 62px 88px 1fr; gap: 10px; padding: 6px 18px; animation: in 240ms var(--ease); }
+.feed li .t { color: var(--subtle); font-variant-numeric: tabular-nums; }
+.feed li .k { text-transform: uppercase; letter-spacing: .06em; font-size: 11px; }
+.feed li .d { color: var(--muted); overflow-wrap: anywhere; }
+.feed li.tool .k { color: var(--sky); }
+.feed li.req .k { color: var(--subtle); }
+.feed li.end { background: rgba(61,220,151,.07); }
+.feed li.end .k { color: var(--mint); }
+.feed li.done .k { color: var(--fg); }
+.feed .resp { display: block; color: var(--subtle); margin-top: 2px; }
+.results { list-style: none; margin: 0; padding: 0; }
+.results li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-top: 1px solid var(--line-fade); font-size: 14px; line-height: 20px; }
+.results li span:last-child { font: 400 12px/20px var(--mono); color: var(--subtle); white-space: nowrap; }
+.pilot .body { padding: 16px 18px; flex: 1; }
+.cmd { font: 400 13px/20px var(--mono); color: var(--muted); background: var(--bg); border: 1px solid var(--line-fade); border-radius: 6px; padding: 10px 12px; margin-bottom: 14px; overflow-x: auto; white-space: nowrap; }
+.cmd b { color: var(--mint); font-weight: 400; }
+.waiting { color: var(--subtle); font: 400 13px/20px var(--mono); }
+.verdict-line { font: 500 15px/22px var(--ui); margin: 16px 0 0; }
+.foot { font: 400 12px/18px var(--mono); color: var(--subtle); margin-top: 12px; max-width: none; }
+@keyframes in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* custos */
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.counts { font: 400 13px/20px var(--mono); color: var(--muted); margin: 10px 0 18px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--subtle); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.card.CONFIRMED { border-left-color: var(--mint); }
+.card.CONTRADICTED { border-left-color: var(--red); }
+.card.UNPROVEN { border-left-color: var(--amber); }
+.card .v { font: 500 11px/16px var(--mono); letter-spacing: .12em; }
+.card.CONFIRMED .v { color: var(--mint); } .card.CONTRADICTED .v { color: var(--red); } .card.UNPROVEN .v { color: var(--amber); }
+.card .claim { font-size: 15px; line-height: 22px; margin: 6px 0 10px; }
+.card .q { font: 400 12px/18px var(--mono); color: var(--fg); background: var(--bg); border: 1px solid var(--line-fade); border-radius: 5px; padding: 6px 8px; overflow-wrap: anywhere; }
+.card .q .ri { color: var(--sky); }
+.card .why { font-size: 13px; line-height: 19px; color: var(--muted); margin-top: 8px; }
+.more { margin-top: 14px; }
+
+/* pipeline */
+.pipe { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; counter-reset: s; }
+.pipe li { background: var(--surface); padding: 20px 22px; counter-increment: s; }
+.pipe li::before { content: "0" counter(s); display: block; font: 400 12px/16px var(--mono); color: var(--sky); margin-bottom: 10px; letter-spacing: .1em; }
+.pipe li p { color: var(--muted); font-size: 14px; line-height: 21px; margin: 0; }
+
+.table { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 21px; }
+th, td { text-align: left; vertical-align: top; padding: 11px 16px; border-bottom: 1px solid var(--line-fade); }
+th { font: 400 11px/16px var(--mono); text-transform: uppercase; letter-spacing: var(--track); color: var(--subtle); background: var(--surface); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+td .mono { font-size: 12.5px; color: var(--muted); }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.list { margin: 0; padding: 0; list-style: none; }
+.list li { padding: 12px 0; border-top: 1px solid var(--line-fade); color: var(--muted); font-size: 15px; line-height: 23px; }
+.list li b { color: var(--fg); font-weight: 600; }
+
+.agents { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 8px; }
+.agent { border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; background: var(--surface); }
+.agent .label { color: var(--sky); }
+.agent p { margin: 6px 0 0; font-size: 14px; line-height: 20px; color: var(--muted); }
+.agent.lead { grid-column: 1 / -1; border-color: rgba(56,189,248,.4); }
+
+.video-wrap { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #000; }
+.video-wrap video { display: block; width: 100%; height: auto; }
+.video-ph { aspect-ratio: 16 / 9; display: grid; place-items: center; text-align: center; color: var(--subtle); font: 400 13px/20px var(--mono); background: repeating-linear-gradient(135deg, var(--surface) 0 14px, #0e0e10 14px 28px); }
+.links { display: flex; flex-wrap: wrap; gap: 12px; }
+.links a { font: 500 14px/20px var(--mono); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; text-decoration: none; }
+.links a:hover { border-color: var(--sky); }
+footer { margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--line); font: 400 12px/18px var(--mono); color: var(--subtle); }
+
+@media (max-width: 900px) {
+  .top { padding: 0 16px; } .top .tag { display: none; }
+  main { padding: 0 16px 60px; }
+  h1.hero { font-size: 38px; line-height: 44px; }
+  .stats, .pipe, .agents, .two, .race { grid-template-columns: 1fr; }
+  .feed { height: 360px; }
+  .feed li { grid-template-columns: 54px 1fr; } .feed li .d { grid-column: 1 / -1; }
+}
+</style>
+</head>
+<body class="dark">
+<header class="top">
+  <span class="brand">Pilot</span>
+  <span class="tag">Learn it once · Prove it · Call it forever</span>
+  <nav>
+    <a href="#race">Race</a><a href="#custos">custos</a><a href="#how">How it works</a><a href="#video">Video</a><a href="#superset">Built with Superset</a><a href="#real">Real vs not</a>
+  </nav>
+</header>
+<main>
+
+<section id="top" style="padding-top:64px">
+  <p class="eyebrow">YC “Own Your Intelligence” hackathon · SF · 2026-09-27</p>
+  <h1 class="hero">Learn it once. Prove it. <em>Call it forever.</em></h1>
+  <p class="lede">Your agents learn a website once, custos checks their work against a recording of what they actually did, and every agent on your team then calls that site through a verified API instead of clicking through it.</p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="label">Agent run vs Pilot call</div>
+      <div class="big" id="s-speed"></div>
+      <div class="note" id="s-speed-note"></div>
+      <div class="src">apis/hn.recording.json · bin/pilot call hn "gbrain"</div>
+    </div>
+    <div class="stat">
+      <div class="label">custos on the agent’s own summary</div>
+      <div class="big" id="s-custos"></div>
+      <div class="note" id="s-custos-note"></div>
+      <div class="src">apis/hn.custos.json</div>
+    </div>
+    <div class="stat">
+      <div class="label">What custos checks against</div>
+      <div class="big" id="s-req"></div>
+      <div class="note" id="s-req-note"></div>
+      <div class="src">apis/hn.recording.json · requests[], agent[]</div>
+    </div>
+  </div>
+</section>
+
+<section id="race">
+  <p class="eyebrow">The race</p>
+  <h2>A real agent searching Hacker News, next to one Pilot call</h2>
+  <p class="sub">Left: a headless Claude Code agent drove Chrome through Playwright MCP to search hn.algolia.com for “claude code”. Every tool call and every network request below is from its recording, played back at the recorded timestamps. Right: the API Pilot learned from that run, called with a new query and timed on this machine.</p>
+  <div class="controls">
+    <button class="primary" id="play">Play race</button>
+    <button id="x1" class="on">1×</button>
+    <button id="x4">4×</button>
+    <span class="replay-tag">● replaying the recorded run</span>
+  </div>
+  <div class="race">
+    <div class="lane agent-lane">
+      <header><h3>Claude Code agent + browser</h3><span class="clock" id="clockA">0.0 s</span></header>
+      <div class="bar"><i id="barA"></i></div>
+      <ul class="feed" id="feed"><li class="req"><span class="t">0.0 s</span><span class="k">ready</span><span class="d">11 recorded requests and 5 tool calls from apis/hn.recording.json. Press play.</span></li></ul>
+    </div>
+    <div class="lane pilot">
+      <header><h3>Pilot call</h3><span class="clock" id="clockB">0 ms</span></header>
+      <div class="bar"><i id="barB"></i></div>
+      <div class="body">
+        <div class="cmd">$ bin/pilot call hn <b>"gbrain"</b></div>
+        <div id="pilotOut"><p class="waiting">No browser, no model: one replayed request. Press play.</p></div>
+      </div>
+    </div>
+  </div>
+  <p class="foot" id="raceFoot"></p>
+</section>
+
+<section id="custos">
+  <p class="eyebrow">custos</p>
+  <h2>Every claim gets a verdict and a citation</h2>
+  <p class="sub">custos splits an agent’s summary into self-contained claims, then an LLM judge rules on each one against a numbered index of the recorded requests. A verdict must cite <code>[request] "quote"</code>, and a grounding guard drops any verdict whose quote is not actually in the cited request to UNPROVEN. These cards are the stored verdicts, unedited.</p>
+  <div class="tabs" id="ctabs"></div>
+  <div class="counts" id="ccounts"></div>
+  <div class="cards" id="cards"></div>
+  <div class="more"><button id="cmore">Show all</button></div>
+</section>
+
+<section id="how">
+  <p class="eyebrow">How it works</p>
+  <h2>From one recorded run to an API the whole team can call</h2>
+  <p class="sub">Nothing below is specific to Hacker News. The same pipeline learned YC’s startup directory (“dental”, 17 requests, 32.3 s).</p>
+  <ol class="pipe">
+    <li><h3>Learn</h3><p>Pilot opens Chrome with a debugging port and records every XHR, fetch and document. A headless Claude Code agent drives the same browser through Playwright MCP <code>--cdp-endpoint</code>. The request whose URL or body carries the typed query and returns JSON becomes the API, with the query templated as <code>{query}</code>.</p></li>
+    <li><h3>Verify</h3><p>Pilot replays the saved request with the learned query and with a probe (“python”). Both must return results and the result sets must differ; otherwise the query was hardcoded and verification fails.</p></li>
+    <li><h3>custos</h3><p>The agent’s summary is split into claims and each gets CONFIRMED, CONTRADICTED or UNPROVEN with a cited request and quote. The grounding guard rejects any quote not found in the request. <code>--rules</code> runs offline with no model.</p></li>
+    <li><h3>GBrain memory</h3><p>Each learned API becomes a GBrain page: site, call signature, verification result and custos status. <code>pilot ask "&lt;question&gt;"</code> searches GBrain, picks a verified API and answers without opening a browser.</p></li>
+    <li><h3>call · swarm · ask</h3><p>Pilot fills in the template and sends the request. No browser and no model. <code>swarm</code> runs many queries in parallel: 50 HN searches finished in 1.14 s.</p></li>
+    <li><h3>Share, verified only</h3><p>A QM <code>@pilot</code> tool lets a teammate’s agent in Slack use an API someone else learned; an MCP server does the same for any MCP client; River export keeps only runs custos fully confirmed.</p></li>
+  </ol>
+</section>
+
+<section id="sponsors">
+  <p class="eyebrow">Sponsor tools</p>
+  <h2>What each sponsor’s tool does in Pilot</h2>
+  <div class="table"><table>
+    <thead><tr><th>Sponsor</th><th>Role in Pilot</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>GBrain</td><td>The core: team memory of every learned site and what custos proved about it. <span class="mono">pilot pages</span> → <span class="mono">gbrain import apis/ --no-embed</span>; <span class="mono">pilot ask</span> and MCP <span class="mono">pilot_ask</span> search it.</td><td>Pages indexed; <span class="mono">gbrain search</span> returns the hn page</td></tr>
+      <tr><td>QM</td><td><span class="mono">@pilot</span> deployment-layer tool (<span class="mono">tool.json</span> + self-contained <span class="mono">call.mjs</span> + learned APIs).</td><td>Tool export done; needs a running <span class="mono">qm up</span> to answer in Slack</td></tr>
+      <tr><td>River</td><td>Fine-tuning JSONL containing only runs where custos confirmed every claim.</td><td>Dataset export only; no training results claimed</td></tr>
+      <tr><td>Superset</td><td>Pilot was built by parallel agents in Superset workspaces, and this page is published from one.</td><td>This page</td></tr>
+      <tr><td>MCP</td><td><span class="mono">pilot mcp</span> exposes learned APIs to Claude Code, Cursor or any MCP client.</td><td>Server in repo</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="video">
+  <p class="eyebrow">Demo video</p>
+  <h2>Watch it run</h2>
+  <div class="video-wrap" id="videoSlot">
+    <div class="video-ph">The demo video is being cut right now in another Superset workspace.<br />It will appear here in the next version of this page.</div>
+  </div>
+</section>
+
+<section id="superset">
+  <p class="eyebrow">Built with Superset</p>
+  <h2>One lead agent, five sub-agents, parallel workspaces</h2>
+  <p class="sub">Pilot was written from scratch during hackathon hours (git history starts at 1:16 pm). A lead agent owned the core, and five sub-agents ran in parallel, each in its own Superset workspace, covering the console UI, QA, the sponsor integrations, the docs, the demo video and this page, which is published from a Superset workspace and versioned on every publish.</p>
+  <div class="agents">
+    <div class="agent lead"><div class="label">Lead agent</div><p>Core pipeline: learn over CDP, verify probe, custos judge with grounding guard, call/swarm, and the plan the sub-agents worked from.</p></div>
+    <div class="agent"><div class="label">UI</div><p>The live console (<code>bin/pilot console</code>): race view, custos verdicts, library.</p></div>
+    <div class="agent"><div class="label">QA</div><p>Tests over the store, templating, verify and the grounding guard.</p></div>
+    <div class="agent"><div class="label">Integrations</div><p>GBrain pages and <code>pilot ask</code>, QM <code>@pilot</code> tool, MCP server, River export.</p></div>
+    <div class="agent"><div class="label">Docs</div><p>README, SUBMISSION and the demo run sheet, with every number traced to a file in <code>apis/</code>.</p></div>
+    <div class="agent"><div class="label">Video</div><p>The demo video, composed from real terminal captures.</p></div>
+    <div class="agent"><div class="label">This page</div><p>A self-contained Superset page: the race and verdicts are baked in from the recordings, no network.</p></div>
+  </div>
+</section>
+
+<section id="real">
+  <p class="eyebrow">Honesty</p>
+  <h2>What is real and what is not</h2>
+  <div class="two">
+    <ul class="list">
+      <li><b>The agent is real.</b> The HN recording is a real headless Claude Code (Sonnet) run driving Chrome through Playwright MCP: 11 requests, 5 tool calls with timestamps, and its summary word for word. The race above replays that file; it does not simulate an agent.</li>
+      <li><b>The call is real.</b> The Pilot lane shows the output of <code>bin/pilot call hn "gbrain"</code>, run while building this page. It is one call, not an average; the calls log shows most HN calls between about 0.2 s and 2 s.</li>
+      <li><b>The verdicts are real.</b> Cards come straight from <code>apis/hn.custos.json</code>, <code>apis/yc.custos.json</code> and <code>apis/hn.claims.json</code>. The judge is an LLM and claim splitting varies between runs: an earlier run on the same HN summary gave 32 of 34 confirmed; the stored run gives 31 of 37.</li>
+    </ul>
+    <ul class="list">
+      <li><b>custos is not always right.</b> The HN UNPROVEN verdicts are missing evidence, not agent errors: the search term travels in the POST body, which the judge’s evidence index left out. On YC it contradicted “showing 40” by citing <code>hitsPerPage:1000</code>; the page may well render 40 at a time.</li>
+      <li><b>Limits.</b> Only sites that fetch results with a background JSON request. No login, one query variable, no pagination, read-only. Saved headers can go stale; then you re-learn.</li>
+      <li><b>Not claimed.</b> No River training run, and QM only answers in Slack with a running deployment. Use Pilot only on sites whose terms allow replaying their search request.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="lineage">
+  <p class="eyebrow">Design lineage</p>
+  <h2>Borrowed from projects that already ship it</h2>
+  <div class="table"><table>
+    <thead><tr><th>Pilot part</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>End-request detection</td><td>Integuru <span class="mono">integuru/graph_builder.py</span> (AGPL, approach reimplemented)</td></tr>
+      <tr><td><span class="mono">{query}</span> templating</td><td>mitmproxy2swagger</td></tr>
+      <tr><td>Calls / time-saved bookkeeping</td><td>Stagehand <span class="mono">cacheService.ts</span> <span class="mono">withCache</span></td></tr>
+      <tr><td>Claim splitting</td><td>RAGAS <span class="mono">src/ragas/metrics/_faithfulness.py</span>; DeepEval <span class="mono">faithfulness/templates/generate_claims.txt</span></td></tr>
+      <tr><td>Verdict taxonomy</td><td>DeepEval <span class="mono">faithfulness/templates/generate_verdicts.txt</span> (yes/no/idk → CONFIRMED/CONTRADICTED/UNPROVEN)</td></tr>
+      <tr><td>Agent + recorder share Chrome</td><td>microsoft/playwright-mcp <span class="mono">--cdp-endpoint</span></td></tr>
+      <tr><td>GBrain page format</td><td>garrytan/gbrain <span class="mono">src/core/markdown.ts</span></td></tr>
+      <tr><td>QM tool descriptor</td><td>yc-software/qm <span class="mono">src/deployment/deployment-layer.ts</span></td></tr>
+      <tr><td>Verify probe, error taxonomy</td><td>Cqctxs/Pilot <span class="mono">src/compiler/validate.ts</span>, <span class="mono">src/shared/errors.ts</span> (ideas only)</td></tr>
+      <tr><td>Grounding guard</td><td>Pilot’s own addition; we found no prior implementation</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="links">
+  <p class="eyebrow">Links</p>
+  <div class="links">
+    <a href="https://github.com/machmoon/pilot-yc" target="_blank" rel="noopener">github.com/machmoon/pilot-yc</a>
+  </div>
+  <footer>Pilot · Patrick Liu (UCSB) · every number on this page is read from a file in <span class="mono">apis/</span> or a command run while building it.</footer>
+</section>
+</main>
+
+<script>
+const DATA={"rec": {"duration": 35014, "query": "claude code", "end": 10, "agent": [{"at_ms": 9187, "tool": "browser_snapshot", "arg": ""}, {"at_ms": 13615, "tool": "browser_type", "arg": "search box"}, {"at_ms": 16015, "tool": "browser_type", "arg": "search box"}, {"at_ms": 18556, "tool": "browser_wait_for", "arg": ""}, {"at_ms": 25384, "tool": "browser_snapshot", "arg": ""}], "requests": [{"i": 0, "at": 932, "m": "GET", "host": "hn.algolia.com", "path": "/", "status": 200, "body": "", "resp": ""}, {"i": 1, "at": 5997, "m": "POST", "host": "uj5wyc0l7x-dsn.algolia.net", "path": "/1/indexes/Item_dev/query", "status": 200, "body": "{\"query\":\"\",\"analyticsTags\":[\"web\"],\"page\":0,\"hitsPerPage\":30,\"minWordSizefor1Typo\":4,\"min", "resp": "{\"hits\":[{\"title\":\"Stephen Hawking has died\",\"url\":\"http://www.bbc.com/news/uk-43396008\",\"author\":\"Cogito\",\"points\":6015,\"num_comments\":436,\"story_id\""}, {"i": 2, "at": 6027, "m": "GET", "host": "telemetry.algolia.com", "path": "/1/settings", "status": 200, "body": "", "resp": "{\"collect\":1,\"probe\":[\"https://t6-eu-1.algolia.net/1/isalive\",\"https://t5-in-1.algolia.net/1/isalive\",\"https://c3-de-1.algolia.net/1/isalive\",\"https:/"}, {"i": 3, "at": 6278, "m": "POST", "host": "www.google-analytics.com", "path": "/j/collect", "status": 200, "body": "", "resp": ""}, {"i": 4, "at": 7338, "m": "POST", "host": "www.google-analytics.com", "path": "/g/collect", "status": 204, "body": "", "resp": ""}, {"i": 5, "at": 7381, "m": "POST", "host": "www.google-analytics.com", "path": "/g/collect", "status": 204, "body": "", "resp": ""}, {"i": 6, "at": 9250, "m": "GET", "host": "t5-in-1.algolia.net", "path": "/1/isalive", "status": 200, "body": "", "resp": "{\"message\":\"server is alive\"}"}, {"i": 7, "at": 11814, "m": "GET", "host": "c3-de-1.algolia.net", "path": "/1/isalive", "status": 200, "body": "", "resp": "{\"message\":\"server is alive\"}"}, {"i": 8, "at": 13310, "m": "GET", "host": "t32-usw-1.algolia.net", "path": "/1/isalive", "status": 200, "body": "", "resp": "{\"message\":\"server is alive\"}"}, {"i": 9, "at": 15010, "m": "GET", "host": "t5-eu-1.algolia.net", "path": "/1/isalive", "status": 200, "body": "", "resp": "{\"message\":\"server is alive\"}"}, {"i": 10, "at": 16190, "m": "POST", "host": "uj5wyc0l7x-dsn.algolia.net", "path": "/1/indexes/Item_dev/query", "status": 200, "body": "{\"query\":\"claude code\",\"analyticsTags\":[\"web\"],\"page\":0,\"hitsPerPage\":30,\"minWordSizefor1T", "resp": "{\"hits\":[{\"title\":\"Claude Code is steganographically marking requests\",\"url\":\"https://thereallo.dev/blog/claude-code-prompt-steganography\",\"author\":\"k"}], "hits": [{"t": "Claude Code is steganographically marking requests", "p": 2445, "c": 750}, {"t": "Claude 3.7 Sonnet and Claude Code", "p": 2127, "c": 963}, {"t": "Claude Code's source code has been leaked via a map file in their NPM registry", "p": 2095, "c": 1022}, {"t": "The Claude Code Source Leak: fake tools, frustration regexes, undercover mode", "p": 1376, "c": 578}, {"t": "Issue: Claude Code is unusable for complex engineering tasks with Feb updates", "p": 1364, "c": 753}], "nbHits": 9211, "summary": "Search on hn.algolia.com for \"claude code\" (sorted by popularity) returned top results including:\n\n1. **\"Claude Code is steganographically marking requests\"** — 2445 points, 750 comments (3 months ago)\n2. **\"Claude 3.7 Sonnet and Claude Code\"** — 2127 points, 963 comments (2 years ago)\n3. **\"Claude Code's source code has been leaked via a map file in their NPM registry\"** — 2095 points, 1022 comments (6 months ago)\n4. **\"The Claude Code Source Leak: fake tools, frustration regexes, undercover mode\"** — 1376 points, 578 comments (6 months ago)\n5. **\"Issue: Claude Code is unusable for complex engineering tasks with Feb updates\"** — 1364 points, 753 comments (6 months ago)\n6. **\"Claude Code refuses requests or charges extra if your commits mention 'OpenClaw'\"** — 1349 points, 720 comments (5 months ago)\n7. **\"Cowork: Claude Code for the rest of your work\"** — 1298 points, 565 comments (9 months ago)\n8. **\"Claude Code Unpacked: A visual guide\"** — 1128 points, 400 comments (6 months ago)\n9. **\"Tell HN: Anthropic no longer allowing Claude Code subscriptions to use OpenClaw\"** — 1099 points, 827 comments (6 months ago)\n10. **\"Tell HN: I'm 60 years old. Claude Code has re-ignited a passion\"** — 1086 points, 988 comments (7 months ago)\n\nThe page reported the search was sorted by popularity, over all time, with the query \"claude code.\""}, "hn": {"judged_at": "2026-09-27 14:23", "requests": 11, "verdicts": [{"claim": "The AI agent performed a search on hn.algolia.com for the query \"claude code\".", "verdict": "UNPROVEN", "request_index": null, "quote": null, "reason": "POST body/query text is not visible in the evidence to confirm the search query."}, {"claim": "The hn.algolia.com search was sorted by popularity.", "verdict": "UNPROVEN", "request_index": null, "quote": null, "reason": "No evidence entry shows a sort parameter or UI state indicating sort order."}, {"claim": "The hn.algolia.com search covered all time.", "verdict": "UNPROVEN", "request_index": null, "quote": null, "reason": "No evidence entry shows a date-range parameter or UI state indicating time filter."}, {"claim": "The hn.algolia.com search page reported the search was sorted by popularity.", "verdict": "UNPROVEN", "request_index": null, "quote": null, "reason": "No evidence shows the rendered page's reported sort setting."}, {"claim": "The hn.algolia.com search page reported the search was over all time.", "verdict": "UNPROVEN", "request_index": null, "quote": null, "reason": "No evidence shows the rendered page's reported time range."}, {"claim": "The hn.algolia.com search page reported the query as \"claude code\".", "verdict": "UNPROVEN", "request_index": null, "quote": null, "reason": "No evidence entry shows the rendered page's displayed query text."}, {"claim": "The hn.algolia.com search for \"claude code\" returned a list of top results.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"hits\":[{\"title\":\"Claude Code is steganographically marking requests\"", "reason": "Entry 10 shows a list of hits returned for a query, matching the claimed results list.", "grounded": true}, {"claim": "The result titled \"Claude Code is steganographically marking requests\" had 2445 points.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"points\":2445", "reason": "Matches recorded points value.", "grounded": true}, {"claim": "The result titled \"Claude Code is steganographically marking requests\" had 750 comments.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"num_comments\":750", "reason": "Matches recorded comment count.", "grounded": true}, {"claim": "The result titled \"Claude 3.7 Sonnet and Claude Code\" had 2127 points.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"points\":2127", "reason": "Matches recorded points value.", "grounded": true}, {"claim": "The result titled \"Claude 3.7 Sonnet and Claude Code\" had 963 comments.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"num_comments\":963", "reason": "Matches recorded comment count.", "grounded": true}, {"claim": "The result titled \"Claude Code's source code has been leaked via a map file in their NPM registry\" had 2095 points.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"points\":2095", "reason": "Matches recorded points value.", "grounded": true}, {"claim": "The result titled \"Claude Code's source code has been leaked via a map file in their NPM registry\" had 1022 comments.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"num_comments\":1022", "reason": "Matches recorded comment count.", "grounded": true}, {"claim": "The result titled \"The Claude Code Source Leak: fake tools, frustration regexes, undercover mode\" had 1376 points.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"points\":1376", "reason": "Matches recorded points value.", "grounded": true}, {"claim": "The result titled \"The Claude Code Source Leak: fake tools, frustration regexes, undercover mode\" had 578 comments.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"num_comments\":578", "reason": "Matches recorded comment count.", "grounded": true}, {"claim": "The result titled \"Issue: Claude Code is unusable for complex engineering tasks with Feb updates\" had 1364 points.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"points\":1364", "reason": "Matches recorded points value.", "grounded": true}, {"claim": "The result titled \"Issue: Claude Code is unusable for complex engineering tasks with Feb updates\" had 753 comments.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"num_comments\":753", "reason": "Matches recorded comment count.", "grounded": true}, {"claim": "The result titled \"Claude Code refuses requests or charges extra if your commits mention 'OpenClaw'\" had 1349 points.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"points\":1349", "reason": "Matches recorded points value.", "grounded": true}, {"claim": "The result titled \"Claude Code refuses requests or charges extra if your commits mention 'OpenClaw'\" had 720 comments.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"num_comments\":720", "reason": "Matches recorded comment count.", "grounded": true}, {"claim": "The result titled \"Cowork: Claude Code for the rest of your work\" had 1298 points.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"points\":1298", "reason": "Matches recorded points value.", "grounded": true}, {"claim": "The result titled \"Cowork: Claude Code for the rest of your work\" had 565 comments.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"num_comments\":565", "reason": "Matches recorded comment count.", "grounded": true}, {"claim": "The result titled \"Claude Code Unpacked: A visual guide\" had 1128 points.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"points\":1128", "reason": "Matches recorded points value.", "grounded": true}, {"claim": "The result titled \"Claude Code Unpacked: A visual guide\" had 400 comments.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"num_comments\":400", "reason": "Matches recorded comment count.", "grounded": true}, {"claim": "The result titled \"Tell HN: Anthropic no longer allowing Claude Code subscriptions to use OpenClaw\" had 1099 points.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"points\":1099", "reason": "Matches recorded points value.", "grounded": true}, {"claim": "The result titled \"Tell HN: Anthropic no longer allowing Claude Code subscriptions to use OpenClaw\" had 827 comments.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"num_comments\":827", "reason": "Matches recorded comment count.", "grounded": true}, {"claim": "The result titled \"Tell HN: I'm 60 years old. Claude Code has re-ignited a passion\" had 1086 points.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"points\":1086", "reason": "Matches recorded points value.", "grounded": true}, {"claim": "The result titled \"Tell HN: I'm 60 years old. Claude Code has re-ignited a passion\" had 988 comments.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"num_comments\":988", "reason": "Matches recorded comment count.", "grounded": true}, {"claim": "The result titled \"Claude Code is steganographically marking requests\" was ranked number 1 in the search results.", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"hits\":[{\"title\":\"Claude Code is steganographically marking requests\"", "reason": "This entry is first in the hits array.", "grounded": true}, {"claim": "The result titled \"Claude 3.7 Sonnet and Claude Code\" was ranked number 2 in the search results.", "verdict": "CONFIRMED", "request_index": 10, "quote": "{\"title\":\"Claude 3.7 Sonnet and Claude Code\"", "reason": "This entry is second in the hits array.", "grounded": true}, {"claim": "The result titled \"Claude Code's source code has been leaked via a map file in their NPM registry\" was ranked number 3 in the search results.", "verdict": "CONFIRMED", "request_index": 10, "quote": "{\"title\":\"Claude Code's source code has been leaked via a map file in their NPM registry\"", "reason": "This entry is third in the hits array.", "grounded": true}, {"claim": "The result titled \"The Claude Code Source Leak: fake tools, frustration regexes, undercover mode\" was ranked number 4 in the search results.", "verdict": "CONFIRMED", "request_index": 10, "quote": "{\"title\":\"The Claude Code Source Leak: fake tools, frustration regexes, undercover mode\"", "reason": "This entry is fourth in the hits array.", "grounded": true}, {"claim": "The result titled \"Issue: Claude Code is unusable for complex engineering tasks with Feb updates\" was ranked number 5 in the search results.", "verdict": "CONFIRMED", "request_index": 10, "quote": "{\"title\":\"Issue: Claude Code is unusable for complex engineering tasks with Feb updates\"", "reason": "This entry is fifth in the hits array.", "grounded": true}, {"claim": "The result titled \"Claude Code refuses requests or charges extra if your commits mention 'OpenClaw'\" was ranked number 6 in the search results.", "verdict": "CONFIRMED", "request_index": 10, "quote": "{\"title\":\"Claude Code refuses requests or charges extra if your commits mention \\\"OpenClaw\\\"\"", "reason": "This entry is sixth in the hits array.", "grounded": true}, {"claim": "The result titled \"Cowork: Claude Code for the rest of your work\" was ranked number 7 in the search results.", "verdict": "CONFIRMED", "request_index": 10, "quote": "{\"title\":\"Cowork: Claude Code for the rest of your work\"", "reason": "This entry is seventh in the hits array.", "grounded": true}, {"claim": "The result titled \"Claude Code Unpacked: A visual guide\" was ranked number 8 in the search results.", "verdict": "CONFIRMED", "request_index": 10, "quote": "{\"title\":\"Claude Code Unpacked : A visual guide\"", "reason": "This entry is eighth in the hits array.", "grounded": true}, {"claim": "The result titled \"Tell HN: Anthropic no longer allowing Claude Code subscriptions to use OpenClaw\" was ranked number 9 in the search results.", "verdict": "CONFIRMED", "request_index": 10, "quote": "{\"title\":\"Tell HN: Anthropic no longer allowing Claude Code subscriptions to use OpenClaw\"", "reason": "This entry is ninth in the hits array.", "grounded": true}, {"claim": "The result titled \"Tell HN: I'm 60 years old. Claude Code has re-ignited a passion\" was ranked number 10 in the search results.", "verdict": "CONFIRMED", "request_index": 10, "quote": "{\"title\":\"Tell HN: I'm 60 years old. Claude Code has re-ignited a passion\"", "reason": "This entry is tenth in the hits array.", "grounded": true}]}, "yc": {"judged_at": "2026-09-27 14:26", "requests": 17, "verdicts": [{"claim": "A search for \"dental\" was performed on YC's Startup Directory.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"query\":\"dental\"", "reason": "The recorded Algolia query params show query=dental against the YC company index.", "grounded": true}, {"claim": "The search for \"dental\" on YC's Startup Directory returned 162 companies.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"nbHits\":162", "reason": "nbHits for the dental query is 162.", "grounded": true}, {"claim": "The search results page was showing 40 companies.", "verdict": "CONTRADICTED", "request_index": 12, "quote": "\"hitsPerPage\":1000", "reason": "The request used hitsPerPage=1000, not 40, for the dental query.", "grounded": true}, {"claim": "The 1st result was Alara.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"name\":\"Alara\"", "reason": "Alara is the first hit in the results array.", "grounded": true}, {"claim": "Alara's description is \"Procurement Platform for Dental Offices\".", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"one_liner\":\"Procurement Platform for Dental Offices\"", "reason": "Matches Alara's one_liner field exactly.", "grounded": true}, {"claim": "Alara's batch is Summer 2025.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"batch\":\"Summer 2025\"", "reason": "Matches Alara's recorded batch.", "grounded": true}, {"claim": "Alara's industry is B2B.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"industry\":\"B2B\"", "reason": "Matches Alara's recorded industry.", "grounded": true}, {"claim": "The 2nd result was Rinse.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"name\":\"Rinse\"", "reason": "Rinse is the second hit in the results array.", "grounded": true}, {"claim": "Rinse is located in San Francisco.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"all_locations\":\"San Francisco, CA, USA\"", "reason": "Matches Rinse's recorded location.", "grounded": true}, {"claim": "Rinse's description is \"Building the One Medical for dental\".", "verdict": "CONFIRMED", "request_index": 12, "quote": "We're building the One Medical for dental", "reason": "Faithful paraphrase of Rinse's one_liner.", "grounded": true}, {"claim": "Rinse's batch is Summer 2021.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"batch\":\"Summer 2021\"", "reason": "Matches Rinse's recorded batch.", "grounded": true}, {"claim": "Rinse's industry is Healthcare.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"industry\":\"Healthcare\"", "reason": "Matches Rinse's recorded industry.", "grounded": true}, {"claim": "The 3rd result was Dodo.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"name\":\"Dodo\"", "reason": "Dodo is the third hit in the results array.", "grounded": true}, {"claim": "Dodo is located in San Francisco.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"all_locations\":\"San Francisco, CA, USA\"", "reason": "Matches Dodo's recorded location.", "grounded": true}, {"claim": "Dodo's description is \"AI agents that handle communications for clinics\".", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"one_liner\":\"AI agents that handle communications for clinics\"", "reason": "Matches Dodo's one_liner exactly.", "grounded": true}, {"claim": "Dodo's batch is Summer 2024.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"batch\":\"Summer 2024\"", "reason": "Matches Dodo's recorded batch.", "grounded": true}, {"claim": "Dodo's industry is Healthcare IT.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"subindustry\":\"Healthcare -> Healthcare IT\"", "reason": "Dodo's subindustry field is Healthcare IT.", "grounded": true}, {"claim": "The 4th result was onederful.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"name\":\"onederful\"", "reason": "onederful is the fourth hit in the results array.", "grounded": true}, {"claim": "onederful is located in San Francisco.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"all_locations\":\"San Francisco, CA, USA; Remote\"", "reason": "Matches onederful's recorded location.", "grounded": true}, {"claim": "onederful's description is \"Dental Insurance API\".", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"one_liner\":\"Dental Insurance API\"", "reason": "Matches onederful's one_liner exactly.", "grounded": true}, {"claim": "onederful's batch is Winter 2018.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"batch\":\"Winter 2018\"", "reason": "Matches onederful's recorded batch.", "grounded": true}, {"claim": "onederful's industry is Healthcare IT.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"subindustry\":\"Healthcare -> Healthcare IT\"", "reason": "onederful's subindustry field is Healthcare IT.", "grounded": true}, {"claim": "The 5th result was Arini.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"name\":\"Arini\"", "reason": "Arini is the fifth hit in the results array.", "grounded": true}, {"claim": "Arini is located in San Francisco.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"all_locations\":\"San Francisco, CA, USA\"", "reason": "Matches Arini's recorded location.", "grounded": true}, {"claim": "Arini's description is \"AI receptionist for dentists\".", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"one_liner\":\"AI receptionist for dentists\"", "reason": "Matches Arini's one_liner exactly.", "grounded": true}, {"claim": "Arini's batch is Winter 2024.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"batch\":\"Winter 2024\"", "reason": "Matches Arini's recorded batch.", "grounded": true}, {"claim": "Arini's industry is Healthcare IT.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"subindustry\":\"Healthcare -> Healthcare IT\"", "reason": "Arini's subindustry field is Healthcare IT.", "grounded": true}, {"claim": "The 6th result was Toothy AI.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"name\":\"Toothy AI\"", "reason": "Toothy AI is the sixth hit in the results array.", "grounded": true}, {"claim": "Toothy AI is located in San Francisco.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"all_locations\":\"San Francisco, CA, USA\"", "reason": "Matches Toothy AI's recorded location.", "grounded": true}, {"claim": "Toothy AI's description is \"AI for insurance verification & billing at dental clinics\".", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"one_liner\":\"AI for insurance verification & billing at dental clinics\"", "reason": "Matches Toothy AI's one_liner exactly.", "grounded": true}, {"claim": "Toothy AI's batch is Winter 2025.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"batch\":\"Winter 2025\"", "reason": "Matches Toothy AI's recorded batch.", "grounded": true}, {"claim": "Toothy AI's industry is Healthcare IT.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"subindustry\":\"Healthcare -> Healthcare IT\"", "reason": "Toothy AI's subindustry field is Healthcare IT.", "grounded": true}, {"claim": "The 7th result was Denta.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"name\":\"Denta\"", "reason": "Denta is the seventh hit in the results array.", "grounded": true}, {"claim": "Denta is located in San Francisco.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"all_locations\":\"San Francisco, CA, USA\"", "reason": "Matches Denta's recorded location.", "grounded": true}, {"claim": "Denta's description is \"Dental Insurance\".", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"one_liner\":\"Dental Insurance\"", "reason": "Matches Denta's one_liner exactly.", "grounded": true}, {"claim": "Denta's batch is Summer 2026.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"batch\":\"Summer 2026\"", "reason": "Matches Denta's recorded batch.", "grounded": true}, {"claim": "Denta's industry is Fintech/Insurance.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"subindustry\":\"Fintech -> Insurance\"", "reason": "Denta's industry/subindustry fields are Fintech and Fintech -> Insurance.", "grounded": true}, {"claim": "The 8th result was Avora.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"name\":\"Avora\"", "reason": "Avora is the eighth hit in the results array.", "grounded": true}, {"claim": "Avora is located in San Francisco.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"all_locations\":\"San Francisco, CA, USA\"", "reason": "Matches Avora's recorded location.", "grounded": true}, {"claim": "Avora's description is \"Agents for dental operations\".", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"one_liner\":\"Agents for dental operations\"", "reason": "Matches Avora's one_liner exactly.", "grounded": true}, {"claim": "Avora's batch is Fall 2024.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"batch\":\"Fall 2024\"", "reason": "Matches Avora's recorded batch.", "grounded": true}, {"claim": "Avora's industry is Healthcare.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"industry\":\"Healthcare\"", "reason": "Matches Avora's recorded industry.", "grounded": true}, {"claim": "The 9th result was Adravision.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"name\":\"Adravision\"", "reason": "Adravision is the ninth hit in the results array.", "grounded": true}, {"claim": "Adravision is located in Singapore.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"all_locations\":\"Singapore, Singapore; Remote\"", "reason": "Matches Adravision's recorded location.", "grounded": true}, {"claim": "Adravision's description is \"Automation for dental clinics and insurance companies\".", "verdict": "CONFIRMED", "request_index": 12, "quote": "Automation for dental clinics and insurance companies.", "reason": "Matches Adravision's one_liner.", "grounded": true}, {"claim": "Adravision's batch is Summer 2021.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"batch\":\"Summer 2021\"", "reason": "Matches Adravision's recorded batch.", "grounded": true}, {"claim": "Adravision's industry is Healthcare IT.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"subindustry\":\"Healthcare -> Healthcare IT\"", "reason": "Adravision's subindustry field is Healthcare IT.", "grounded": true}, {"claim": "The 10th result was 10x.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"name\":\"10x\"", "reason": "10x is the tenth hit in the results array.", "grounded": true}, {"claim": "10x is located in San Francisco.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"all_locations\":\"San Francisco, CA, USA\"", "reason": "Matches 10x's recorded location.", "grounded": true}, {"claim": "10x's description is \"AI Sales Teams for Dental Practices\".", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"one_liner\":\"AI Sales Teams for Dental Practices\"", "reason": "Matches 10x's one_liner exactly.", "grounded": true}, {"claim": "10x's batch is Winter 2025.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"batch\":\"Winter 2025\"", "reason": "Matches 10x's recorded batch.", "grounded": true}, {"claim": "10x's industry is Healthcare.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"industry\":\"Healthcare\"", "reason": "Matches 10x's recorded industry.", "grounded": true}, {"claim": "The filter sidebar for the \"dental\" query included a \"Top Companies\" filter marked with a diamond emoji showing a count of 2.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"top_company\":{\"false\":160,\"true\":2}", "reason": "top_company facet for the dental query shows a true count of 2; the diamond icon is standard styling for this field but count matches.", "grounded": true}, {"claim": "The filter sidebar for the \"dental\" query included an \"Is Hiring\" filter showing a count of 47.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"isHiring\":{\"false\":115,\"true\":47}", "reason": "isHiring facet for the dental query shows a true count of 47.", "grounded": true}, {"claim": "The filter sidebar for the \"dental\" query included a \"Nonprofit\" filter showing a count of 2.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"nonprofit\":{\"false\":160,\"true\":2}", "reason": "nonprofit facet for the dental query shows a true count of 2.", "grounded": true}, {"claim": "The filter facets for batch updated to reflect only the 162 matching companies.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"exhaustiveFacetsCount\":true", "reason": "The dental-query response recomputed batch facet counts specific to the 162 dental hits, distinct from the unfiltered facet counts.", "grounded": true}, {"claim": "The filter facets for industry updated to reflect only the 162 matching companies.", "verdict": "CONFIRMED", "request_index": 12, "quote": "\"industries\":{\"Healthcare\":69,\"B2B\":36", "reason": "Industry facet counts in the dental-query response are specific to the 162 dental hits, different from the unfiltered totals.", "grounded": true}, {"claim": "No point or vote scores are shown on the YC Startup Directory page.", "verdict": "UNPROVEN", "request_index": null, "quote": null, "reason": "No point/vote field appears in the recorded data, but the evidence doesn't confirm what the rendered page displays or omits."}, {"claim": "Only batch and industry tags are shown per company on the YC Startup Directory page.", "verdict": "UNPROVEN", "request_index": null, "quote": null, "reason": "The records also contain additional 'tags' fields (e.g. Alara's tags), so it's unclear from the JSON alone whether only batch/industry are rendered on the page."}]}, "claims": [{"claim": "The top story is 'Claude Code is steganographically marking requests'", "verdict": "CONFIRMED", "request_index": 10, "quote": "\"title\":\"Claude Code is steganographically marking requests\"", "reason": "This is the first hit in the search results the agent saw.", "grounded": true}, {"claim": "It has 2845 points", "verdict": "CONTRADICTED", "request_index": 10, "quote": "\"points\":2445", "reason": "Recorded points value is 2445, not 2845.", "grounded": true}, {"claim": "I emailed the results to the team", "verdict": "UNPROVEN", "request_index": null, "quote": null, "reason": "No email-sending request appears in the evidence log."}]};
+const CALL = {"ms": 996, "when": "2026-09-27 14:28 PT", "hits": [{"t": "Show HN: Skill for your agent to visualize your gbrain and Obsidian", "p": 23}, {"t": "GBrain – The memex, built for people who think for a living", "p": 9}, {"t": "Garry Tan's GBrain – most important idea of the year", "p": 5}, {"t": "Show HN: GBrain, an AI tool for diagnosis and therapy for neurodivergents", "p": 4}, {"t": "Gbrain-Evals", "p": 4}]};
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const R = DATA.rec;
+  const count = (vs) => vs.reduce((a, v) => (a[v.verdict] = (a[v.verdict] || 0) + 1, a), { CONFIRMED: 0, CONTRADICTED: 0, UNPROVEN: 0 });
+
+  // stats
+  const agentS = (R.duration / 1000).toFixed(1);
+  $("s-speed").innerHTML = agentS + " s<small>vs</small>" + CALL.ms + " ms";
+  $("s-speed-note").textContent = "One real agent search of hn.algolia.com, against one Pilot call to the API it learned: about " + Math.round(R.duration / CALL.ms) + "× faster, with no browser and no model.";
+  const hc = count(DATA.hn.verdicts);
+  $("s-custos").innerHTML = '<span class="good">' + hc.CONFIRMED + '</span><small>/</small><span class="bad">' + hc.CONTRADICTED + '</span><small>/</small><span class="warn">' + hc.UNPROVEN + "</span>";
+  $("s-custos-note").textContent = "confirmed / contradicted / unproven across the " + DATA.hn.verdicts.length + " claims in the agent’s HN summary. Every confirmed claim cites a recorded request.";
+  $("s-req").innerHTML = R.requests.length + "<small>requests</small>" + R.agent.length + "<small>tool calls</small>";
+  $("s-req-note").textContent = "Recorded while the agent worked. One of them, request [" + R.end + "], carried the query and the JSON answer, and became the API.";
+
+  // race
+  const events = [{ at: 0, cls: "req", k: "start", d: "run started · query “" + R.query + "”" }];
+  R.agent.forEach((a) => events.push({ at: a.at_ms, cls: "tool", k: a.tool.replace("browser_", ""), d: a.tool + (a.arg ? " → " + a.arg : "") }));
+  R.requests.forEach((q) => {
+    const end = q.i === R.end;
+    let d = esc(q.m + " " + q.host + q.path + " · " + q.status);
+    if (end) d += '<span class="resp">body ' + esc(q.body) + '…</span><span class="resp good">→ ' + R.nbHits + " hits · 1. " + esc(R.hits[0].t) + " · " + R.hits[0].p + " pts</span>";
+    else if (q.resp) d += '<span class="resp">' + esc(q.resp.slice(0, 90)) + (q.resp.length > 90 ? "…" : "") + "</span>";
+    events.push({ at: q.at, cls: end ? "req end" : "req", k: end ? "answer [" + q.i + "]" : "req [" + q.i + "]", d: d });
+  });
+  events.push({ at: R.duration, cls: "done", k: "done", d: "summary returned · top hit: " + esc(R.hits[0].t) + " (" + R.hits[0].p + " points)" });
+  events.sort((a, b) => a.at - b.at);
+
+  let speed = 1, raf = 0, t0 = 0, shown = 0, pilotDone = false;
+  const feed = $("feed");
+  function fmtS(ms) { return (ms / 1000).toFixed(1) + " s"; }
+  function reset() {
+    cancelAnimationFrame(raf); feed.innerHTML = ""; shown = 0; pilotDone = false;
+    $("clockA").textContent = "0.0 s"; $("clockB").textContent = "0 ms"; $("barA").style.width = "0"; $("barB").style.width = "0";
+    $("pilotOut").innerHTML = '<p class="waiting">Sending one request…</p>';
+  }
+  function pilotResult() {
+    $("pilotOut").innerHTML = '<ul class="results">' + CALL.hits.map((h) => "<li><span>" + esc(h.t) + "</span><span>" + h.p + " pts</span></li>").join("") + "</ul>" +
+      '<p class="verdict-line good">Done in ' + CALL.ms + " ms.</p><p class=\"foot\">Measured " + esc(CALL.when) + ". The agent lane is still clicking.</p>";
+  }
+  function tick(now) {
+    const el = (now - t0) * speed;
+    const a = Math.min(el, R.duration);
+    $("clockA").textContent = fmtS(a);
+    $("barA").style.width = (a / R.duration * 100) + "%";
+    while (shown < events.length && events[shown].at <= el) {
+      const e = events[shown++];
+      const li = document.createElement("li");
+      li.className = e.cls;
+      li.innerHTML = '<span class="t">' + fmtS(e.at) + '</span><span class="k">' + esc(e.k) + '</span><span class="d">' + e.d + "</span>";
+      feed.appendChild(li); feed.scrollTop = feed.scrollHeight;
+    }
+    const b = Math.min(el, CALL.ms);
+    $("clockB").textContent = Math.round(b) + " ms";
+    $("barB").style.width = (b / CALL.ms * 100) + "%";
+    if (!pilotDone && el >= CALL.ms) { pilotDone = true; pilotResult(); }
+    if (el < R.duration) raf = requestAnimationFrame(tick);
+    else {
+      $("play").textContent = "Replay race";
+      const p = $("pilotOut").querySelector(".foot");
+      if (p) p.textContent = "Measured " + CALL.when + ". The agent finished " + (R.duration / CALL.ms).toFixed(0) + "× later.";
+    }
+  }
+  function play() { reset(); $("play").textContent = "Restart"; t0 = performance.now(); raf = requestAnimationFrame(tick); }
+  function setSpeed(s) {
+    const now = performance.now(); const el = (now - t0) * speed; speed = s; t0 = now - el / speed;
+    $("x1").classList.toggle("on", s === 1); $("x4").classList.toggle("on", s === 4);
+  }
+  $("play").onclick = play; $("x1").onclick = () => setSpeed(1); $("x4").onclick = () => setSpeed(4);
+  $("raceFoot").textContent = "Agent: " + R.requests.length + " requests, " + R.agent.length + " tool calls, " + agentS + " s (apis/hn.recording.json, started " + "2026-09-27 14:16 PT). The first ~9 s is Claude Code starting and reading the page before its first tool call. Pilot: the hn API learned from request [" + R.end + "], called live with a query the agent never typed.";
+  // static first frame: show events up to 0
+  $("pilotOut").innerHTML = '<p class="waiting">No browser, no model: one replayed request. Press play.</p>';
+
+  // custos
+  const sets = [
+    { id: "demo", name: "3-claim demo", v: DATA.claims, note: "Three hand-written claims judged against the HN recording: one true, one with a wrong number, one about an action that never happened." },
+    { id: "hn", name: "HN agent summary", v: DATA.hn.verdicts, note: "Claims split from the real agent’s own summary of its HN search (" + DATA.hn.requests + " recorded requests, judged " + DATA.hn.judged_at + ")." },
+    { id: "yc", name: "YC agent summary", v: DATA.yc.verdicts, note: "Claims split from a real agent’s summary of a YC startup directory search for “dental” (" + DATA.yc.requests + " recorded requests, judged " + DATA.yc.judged_at + ")." }
+  ];
+  let cur = sets[0], all = false;
+  const order = { CONTRADICTED: 0, UNPROVEN: 1, CONFIRMED: 2 };
+  function card(v) {
+    const q = v.quote ? '<div class="q"><span class="ri">[' + v.request_index + "]</span> " + esc(v.quote) + "</div>" : '<div class="q dim">no request cited</div>';
+    return '<div class="card ' + v.verdict + '"><div class="v">' + v.verdict + '</div><div class="claim">' + esc(v.claim) + "</div>" + q + '<div class="why">' + esc(v.reason) + "</div></div>";
+  }
+  function renderC() {
+    $("ctabs").innerHTML = sets.map((s) => '<button data-id="' + s.id + '" class="' + (s === cur ? "on" : "") + '">' + s.name + "</button>").join("");
+    const c = count(cur.v);
+    $("ccounts").innerHTML = esc(cur.note) + '<br><span class="good">' + c.CONFIRMED + " confirmed</span> · <span class=\"bad\">" + c.CONTRADICTED + " contradicted</span> · <span class=\"warn\">" + c.UNPROVEN + " unproven</span>";
+    const sorted = cur.id === "demo" ? cur.v : cur.v.slice().sort((a, b) => order[a.verdict] - order[b.verdict]);
+    const lim = all ? sorted.length : 9;
+    $("cards").innerHTML = sorted.slice(0, lim).map(card).join("");
+    $("cmore").style.display = sorted.length > 9 ? "" : "none";
+    $("cmore").textContent = all ? "Show fewer" : "Show all " + sorted.length;
+    $("ctabs").querySelectorAll("button").forEach((b) => b.onclick = () => { cur = sets.find((s) => s.id === b.dataset.id); all = false; renderC(); });
+  }
+  $("cmore").onclick = () => { all = !all; renderC(); };
+  renderC();
+})();
+</script>
+</body>
+</html>
