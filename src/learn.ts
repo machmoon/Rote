@@ -105,7 +105,8 @@ export async function learn(name: string, url: string, query: string, opts: { dr
       await browser.close();
     } finally {
       chrome.kill();
-      rmSync(dir, { recursive: true, force: true });
+      await new Promise((r) => (chrome.exitCode !== null ? r(0) : chrome.once("exit", r)));
+      try { rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch { /* temp profile; the OS cleans it */ }
     }
   } else {
     const browser = await chromium.launch({ channel: "chrome", headless: false, args: ["--window-size=1280,860"] });
