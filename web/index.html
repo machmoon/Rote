@@ -221,7 +221,12 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
 .gbrain { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 22px; padding: 18px 22px; border: 1px solid color-mix(in srgb, var(--mint) 40%, transparent); border-radius: 6px; background: color-mix(in srgb, var(--mint) 5%, var(--surface)); }
 .gbrain:has(.ask[hidden]) { grid-template-columns: 1fr; }
 .gb-t { font: 400 17px/26px var(--ui); margin-top: 6px; max-width: 760px; }
-.ask-out { margin-top: 10px; font: 400 16px/24px var(--ui); color: var(--fg); white-space: pre-wrap; max-height: 220px; overflow: auto; }
+.ask-out { margin-top: 12px; font: 400 16px/24px var(--ui); color: var(--fg); }
+.ask-steps { display: grid; gap: 6px; margin-bottom: 8px; }
+.ask-step { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.ask-step .label { width: 180px; white-space: nowrap; flex-shrink: 0; }
+.ask-res { max-height: 240px; border-top: 1px solid var(--line-fade); margin-bottom: 8px; }
+.ask-res li { padding: 7px 4px; }
 /* learn */
 .learn-form { display: grid; grid-template-columns: 160px 1.4fr 1fr auto auto auto; gap: 10px; margin: 22px 0 16px; align-items: center; }
 .status-line { font: 400 15px/22px var(--mono); color: var(--muted); padding: 12px 16px; border: 1px solid var(--border); border-radius: 6px; background: var(--canvas); margin-bottom: 16px; display: flex; gap: 12px; align-items: center; min-height: 48px; }
@@ -229,7 +234,7 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
 .learn-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 16px; }
 .learn-grid .lane { height: max(320px, calc(100vh - 470px)); }
 .learned { margin-top: 16px; }
-.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 16px; font: 400 14px/20px var(--ui); z-index: 60; display: none; }
+.toast { position: fixed; bottom: 20px; right: 20px; background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 16px; font: 400 14px/20px var(--ui); z-index: 60; display: none; }
 .toast.on { display: block; }
 
 @media (max-width: 1360px) {
@@ -344,8 +349,8 @@ select.field { padding-right: 32px; appearance: none; background-image: linear-g
     <div><div class="label" style="color:var(--mint)">In team memory · GBrain</div>
       <div class="gb-t">Every learned API is a GBrain page: the templated request, the verification, and custos's verdicts. Any teammate's agent finds it by searching the brain.</div>
       <div class="chips" id="gb-pages" style="margin-top:10px"></div></div>
-    <form class="ask" id="ask" hidden><div class="label" style="margin-bottom:8px">Ask the team's brain</div>
-      <div style="display:flex;gap:8px"><input class="field" id="ask-q" placeholder="What's the top Hacker News story about Claude Code?" style="flex:1"><button class="btn" type="submit">Ask</button></div>
+    <form class="ask" id="ask" hidden><div class="label" style="margin-bottom:8px">Ask GBrain · any agent asks, GBrain knows a verified API, Pilot answers</div>
+      <div style="display:flex;gap:8px"><input class="field" id="ask-q" placeholder="hacker news stories about rust" style="flex:1"><button class="btn" type="submit">Ask</button></div>
       <div class="ask-out" id="ask-out"></div></form>
   </div>
   <div class="cards" id="cards"></div>
@@ -386,7 +391,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const api = async (path, body) => {
   const r = await fetch(path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : {});
   const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j?.error?.message ?? `HTTP ${r.status}`);
+  if (!r.ok) { const e = new Error(j?.error?.message ?? `HTTP ${r.status}`); e.code = j?.error?.code ?? `HTTP_${r.status}`; throw e; }
   return j;
 };
 const toast = (t) => { const e = $("#toast"); e.textContent = t; e.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove("on"), 4000); };
@@ -463,7 +468,7 @@ async function setupRace() {
   const a = cur(); if (!a) { $("#race-eyebrow").textContent = "No learned APIs yet. Use Learn."; return; }
   const rec = a.agent_steps || a.requests_seen ? await getRec(a.name).catch(() => null) : null;
   const dur = rec?.duration_ms ?? a.browser_seconds * 1000;
-  $("#race-eyebrow").textContent = `${hostPath(a.site).host} · ${a.driver === "claude" ? "Claude Code + Playwright MCP" : a.driver} · recorded run · ${rec?.agent.length ?? 0} steps · ${rec?.requests.length ?? a.requests_seen} requests`;
+  $("#race-eyebrow").textContent = `${hostPath(a.site).host} · ${a.driver === "claude" ? "Claude Code + Playwright MCP" : a.driver} · ${rec?.agent.length ?? 0} steps · ${rec?.requests.length ?? a.requests_seen} requests`;
   $("#race-headline").innerHTML = `Same search. Agent in a browser vs. one Pilot call.`;
   $("#race-q").value = QUERY_NEXT[a.name] && QUERY_NEXT[a.name] !== a.learned_query ? QUERY_NEXT[a.name] : PROBES.find((p) => p !== a.learned_query && p !== a.verified?.probe_query) ?? "rust";
   $("#st-agent").textContent = secs(dur); $("#st-agent-n").textContent = `searched "${a.learned_query}" in a browser`;
@@ -531,9 +536,10 @@ async function startRace() {
   raf = requestAnimationFrame(tick);
   // right lane: the real call
   $("#p-state").textContent = "calling"; $("#p-state").className = "run";
+  const slow = setTimeout(() => { if (!pDone) $("#p-rows").innerHTML = `<div class="empty">Waiting on ${esc(hostPath(a.url).host)} over venue wifi…${a.avg_call_ms ? ` last measured ${fmtMs(a.avg_call_ms)}` : ""}</div>`; }, 1500);
   try {
     const r = await api("/api/call", { name: a.name, query: q });
-    pDone = true; pMs = r.ms;
+    pDone = true; pMs = r.ms; clearTimeout(slow);
     $("#p-clock").firstChild.nodeValue = (r.ms / 1000).toFixed(3) + "s "; $("#p-clock").classList.add("done");
     $("#p-state").textContent = "done"; $("#p-state").className = "ok";
     $("#p-n").textContent = r.results.length; $("#p-total").textContent = r.total != null ? r.total.toLocaleString() : "–";
@@ -545,8 +551,11 @@ async function startRace() {
     $("#race-headline").innerHTML = `Pilot answered <em>${x}× faster</em> than the agent.`;
     $("#race-delta").innerHTML = `<span>time <b>−${((dur - r.ms) / 1000).toFixed(1)}s (${(100 * (1 - r.ms / dur)).toFixed(1)}%)</b></span><span>browser <b>none</b></span><span>model tokens <b>0</b></span><span>query <b>"${esc(q)}"</b>, never seen by the agent</span>`;
   } catch (e) {
-    pDone = true; $("#p-state").textContent = "failed"; $("#p-state").className = "bad";
-    $("#p-rows").innerHTML = `<div class="empty bad">${esc(e.message)}</div>`;
+    clearTimeout(slow); pDone = true; $("#p-state").textContent = "failed"; $("#p-state").className = "bad";
+    $("#p-clock").firstChild.nodeValue = "—  ";
+    const last = a.avg_call_ms ? `<div class="empty">Last measured: <b class="good">${fmtMs(a.avg_call_ms)}</b> average over the last ${Math.min(a.calls, 50)} calls, <b class="good">${Math.round(dur / a.avg_call_ms)}× faster</b> than the recorded agent. Press Enter to retry.</div>` : "";
+    $("#p-rows").innerHTML = `<div class="empty"><span class="chip bad">${esc(e.code ?? "ERROR")}</span> <span class="bad">${esc(e.message)}</span></div>${last}`;
+    $("#race-headline").innerHTML = a.avg_call_ms ? `Last measured: Pilot is <em>${Math.round(dur / a.avg_call_ms)}× faster</em> than the agent.` : "The live call failed. Try again.";
   }
 }
 $("#race-go").onclick = startRace;
@@ -714,9 +723,17 @@ async function probeAsk() {
 $("#ask").onsubmit = async (e) => {
   e.preventDefault(); const q = $("#ask-q").value.trim() || $("#ask-q").placeholder; $("#ask-q").value = q;
   const out = $("#ask-out"); out.innerHTML = `<span class="dim">Searching GBrain…</span>`;
-  try { const r = await api("/api/ask", { question: q }); const t = r.answer ?? r.text ?? r.result ?? JSON.stringify(r, null, 2);
-    out.innerHTML = esc(t) + (r.sources?.length ? `<div class="chips" style="margin-top:8px">${r.sources.map((x) => `<span class="chip">${esc(typeof x === "string" ? x : x.title ?? x.name ?? JSON.stringify(x))}</span>`).join("")}</div>` : "");
-  } catch (err) { out.innerHTML = `<span class="bad">${esc(err.message)}</span>`; }
+  const t0 = performance.now();
+  try {
+    const r = await api("/api/ask", { question: q });
+    const h = r.route?.hit, res = r.result;
+    out.innerHTML = `<div class="ask-steps">
+      <div class="ask-step"><span class="label">1 · agent asks</span><span>${esc(q)}</span></div>
+      <div class="ask-step"><span class="label" style="color:var(--mint)">2 · GBrain routes</span><span class="mono">${esc(h?.slug ?? r.route?.name ?? "?")}</span><span class="dim mono">score ${h?.score != null ? (+h.score).toFixed(2) : "–"} · ${r.route_ms != null ? fmtMs(r.route_ms) : ""}</span></div>
+      <div class="ask-step"><span class="label" style="color:var(--mint)">3 · Pilot calls</span><span class="mono">${esc(res?.name ?? r.route?.name ?? "")}("${esc(res?.query ?? "")}")</span><span class="dim mono">${res?.ms != null ? fmtMs(res.ms) : ""}${res?.total != null ? ` · ${res.total.toLocaleString()} matches` : ""}</span>${r.proven ? `<span class="chip ok">custos proven</span>` : r.confirmed != null ? `<span class="chip">custos ${esc(String(r.confirmed))} confirmed</span>` : ""}</div>
+    </div><ol class="results ask-res">${(res?.results ?? []).map((x, i) => `<li class="row-in"><span class="n">${pad2(i + 1)}</span><span class="t">${esc(x.title)}</span><span class="d">${esc(x.detail)}</span></li>`).join("") || `<div class="empty">No results.</div>`}</ol>
+    <div class="note">Question to answer in ${fmtMs(performance.now() - t0)} end to end. No browser, no model in the loop.</div>`;
+  } catch (err) { out.innerHTML = `<span class="chip bad">${esc(err.code ?? "ERROR")}</span> <span class="bad">${esc(err.message)}</span>`; }
 };
 function renderLibrary() {
   probeAsk();

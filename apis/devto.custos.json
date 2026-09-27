@@ -1,0 +1,464 @@
+{
+ "name": "devto",
+ "judged_at": "2026-09-27 14:40",
+ "claims_from": "summary",
+ "judge": "llm",
+ "requests": 19,
+ "verdicts": [
+  {
+   "claim": "The AI agent searched for \"claude code\" on dev.to.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"query\":\"claude code\"",
+   "reason": "Algolia search query matches.",
+   "grounded": true
+  },
+  {
+   "claim": "The AI agent returned a list of top results for \"claude code\" on dev.to.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"hits\":[{\"score\":34",
+   "reason": "Hits array returned as results list.",
+   "grounded": true
+  },
+  {
+   "claim": "The 1st result title is \"Claude Code Batch File Edits: Using MultiEdit and Write Together to Cut Round-Trips in Long Refactor Sessions\".",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"title\":\"Claude Code Batch File Edits: Using MultiEdit and Write Together to Cut Round-Trips in Long Refactor Sessions\"",
+   "reason": "Matches first hit title.",
+   "grounded": true
+  },
+  {
+   "claim": "The 1st result author is jsmanifest.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"username\":\"jsmanifest\"",
+   "reason": "Matches first hit's user.",
+   "grounded": true
+  },
+  {
+   "claim": "The 1st result was published on Sep 25.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"readable_publish_date\":\"Sep 25\"",
+   "reason": "Matches first hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 1st result has a 13 min read time.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"reading_time\":13",
+   "reason": "Matches first hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 1st result shows no reactions or comments.",
+   "verdict": "UNPROVEN",
+   "request_index": 17,
+   "quote": "\"positive_reactions_count\":0,\"public_reactions_count\":0,\"public_reactions_count\":0,\"timestamp\":1790362870,\"reading_time\":13,\"featured\":false,\"subforem_id\":1,\"comments_count\":0",
+   "reason": "downgraded: the judge cited [17] \"\\\"positive_reactions_count\\\":0,\\\"public_rea\", which is not in that request",
+   "grounded": false
+  },
+  {
+   "claim": "The 2nd result title is \"Claude Code Compaction: Why Your Session Forgets Mid-Task (and the Fix)\".",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"title\":\"Claude Code Compaction: Why Your Session Forgets Mid-Task (and the Fix)\"",
+   "reason": "Matches second hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 2nd result author is Alfredo Izquierdo.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"name\":\"Alfredo Izquierdo\"",
+   "reason": "Matches second hit's user.",
+   "grounded": true
+  },
+  {
+   "claim": "The 2nd result was published on Sep 24.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"readable_publish_date\":\"Sep 24\"",
+   "reason": "Matches second hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 2nd result has a 5 min read time.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"reading_time\":5",
+   "reason": "Matches second hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 2nd result shows no reactions.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"public_reactions_count\":0",
+   "reason": "Second hit has zero reactions.",
+   "grounded": true
+  },
+  {
+   "claim": "The 3rd result title is \"Claude Code Subagents Were 48% of My Bill. Their Output Was 0.9%\".",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"title\":\"Claude Code Subagents Were 48% of My Bill. Their Output Was 0.9%\"",
+   "reason": "Matches third hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 3rd result author is jidonglab.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"username\":\"ji_ai\"",
+   "reason": "User's display name jidonglab matches this hit's user.",
+   "grounded": true
+  },
+  {
+   "claim": "The 3rd result was published on Sep 24.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"readable_publish_date\":\"Sep 24\"",
+   "reason": "Matches third hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 3rd result has a 6 min read time.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"reading_time\":6",
+   "reason": "Matches third hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 3rd result shows no reactions.",
+   "verdict": "UNPROVEN",
+   "request_index": 17,
+   "quote": "\"public_reactions_count\":0,\"public_reactions_count\":0,\"path\":\"/ji_ai",
+   "reason": "downgraded: the judge cited [17] \"\\\"public_reactions_count\\\":0,\\\"public_react\", which is not in that request",
+   "grounded": false
+  },
+  {
+   "claim": "The 4th result title is \"Claude Code permission rules: Bash(git push:*) stopped 8 of 14 ways to push, and 5 reached the remote\".",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"title\":\"Claude Code permission rules: Bash(git push:*) stopped 8 of 14 ways to push, and 5 reached the remote\"",
+   "reason": "Matches fourth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 4th result author is Rulestack.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"name\":\"Rulestack\"",
+   "reason": "Matches fourth hit's user.",
+   "grounded": true
+  },
+  {
+   "claim": "The 4th result was published on Sep 24.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"readable_publish_date\":\"Sep 24\"",
+   "reason": "Matches fourth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 4th result has 1 reaction.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"public_reactions_count\":1",
+   "reason": "Matches fourth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 4th result has 1 comment.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"comments_count\":1",
+   "reason": "Matches fourth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 4th result has an 11 min read time.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"reading_time\":11",
+   "reason": "Matches fourth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 5th result title is \"Claude Code Switcher\".",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"title\":\"Claude Code Switcher\"",
+   "reason": "Matches fifth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 5th result author is Mbuodile Obiosio.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"name\":\"Mbuodile Obiosio\"",
+   "reason": "Matches fifth hit's user.",
+   "grounded": true
+  },
+  {
+   "claim": "The 5th result was published on Sep 23.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"readable_publish_date\":\"Sep 23\"",
+   "reason": "Matches fifth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 5th result has a 1 min read time.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"reading_time\":1",
+   "reason": "Matches fifth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 5th result shows no reactions.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"public_reactions_count\":0",
+   "reason": "Fifth hit has zero reactions.",
+   "grounded": true
+  },
+  {
+   "claim": "The 6th result title is \"Claude Code MCP setup and usage rules\".",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"title\":\"Claude Code MCP setup and usage rules\"",
+   "reason": "Matches sixth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 6th result author is DevLog.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"name\":\"DevLog\"",
+   "reason": "Matches sixth hit's user.",
+   "grounded": true
+  },
+  {
+   "claim": "The 6th result was published on Sep 23.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"readable_publish_date\":\"Sep 23\"",
+   "reason": "Matches sixth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 6th result has a 3 min read time.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"reading_time\":3",
+   "reason": "Matches sixth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 6th result shows no reactions.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"positive_reactions_count\":0,\"path\":\"/devlog",
+   "reason": "Sixth hit has zero reactions.",
+   "grounded": true
+  },
+  {
+   "claim": "The 7th result title is \"Claude Code + Playwright MCP + GitHub Actions: 3 Test Layers That Actually Kill Regressions\".",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"title\":\"Claude Code + Playwright MCP + GitHub Actions: 3 Test Layers That Actually Kill Regressions\"",
+   "reason": "Matches seventh hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 7th result author is Ken Imoto.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"name\":\"Ken Imoto\"",
+   "reason": "Matches seventh hit's user.",
+   "grounded": true
+  },
+  {
+   "claim": "The 7th result was published on Sep 21.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"readable_publish_date\":\"Sep 21\"",
+   "reason": "Matches seventh hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 7th result has a 7 min read time.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"reading_time\":7",
+   "reason": "Matches seventh hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 7th result shows no reactions.",
+   "verdict": "UNPROVEN",
+   "request_index": 17,
+   "quote": "\"public_reactions_count\":0,\"main_image\":\"https://res.cloudinary.com",
+   "reason": "downgraded: the judge cited [17] \"\\\"public_reactions_count\\\":0,\\\"main_image\\\":\", which is not in that request",
+   "grounded": false
+  },
+  {
+   "claim": "The 8th result title is \"Claude Code Headless Mode in 2026: Scripting Autonomous Coding Tasks Without the Interactive Shell\".",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"title\":\"Claude Code Headless Mode in 2026: Scripting Autonomous Coding Tasks Without the Interactive Shell\"",
+   "reason": "Matches eighth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 8th result author is jsmanifest.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"username\":\"jsmanifest\"",
+   "reason": "Matches eighth hit's user.",
+   "grounded": true
+  },
+  {
+   "claim": "The 8th result was published on Sep 17.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"readable_publish_date\":\"Sep 17\"",
+   "reason": "Matches eighth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 8th result has a 14 min read time.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"reading_time\":14",
+   "reason": "Matches eighth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 8th result shows no reactions.",
+   "verdict": "UNPROVEN",
+   "request_index": 17,
+   "quote": "\"public_reactions_count\":0,\"user_id\":171901",
+   "reason": "downgraded: the judge cited [17] \"\\\"public_reactions_count\\\":0,\\\"user_id\\\":171\", which is not in that request",
+   "grounded": false
+  },
+  {
+   "claim": "The 9th result title is \"Claude Code vs Cursor: 10 Coding Tasks, 2 Very Different Workflows\".",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"title\":\"Claude Code vs Cursor: 10 Coding Tasks, 2 Very Different Workflows\"",
+   "reason": "Matches ninth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 9th result author is Info Inlet.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"name\":\"Info Inlet\"",
+   "reason": "Matches ninth hit's user.",
+   "grounded": true
+  },
+  {
+   "claim": "The 9th result was published on Sep 16.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"readable_publish_date\":\"Sep 16\"",
+   "reason": "Matches ninth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 9th result has 20 reactions.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"public_reactions_count\":20",
+   "reason": "Matches ninth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 9th result has 2 comments.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"comments_count\":2",
+   "reason": "Matches ninth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 9th result has a 4 min read time.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"reading_time\":4",
+   "reason": "Matches ninth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 10th result title is \"Claude Code vs Codex vs Cursor: Which One Actually Makes Me Faster?\".",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"title\":\"Claude Code vs Codex vs Cursor: Which One Actually Makes Me Faster?\"",
+   "reason": "Matches tenth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 10th result author is Bilal Shah.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"name\":\"Bilal Shah\"",
+   "reason": "Matches tenth hit's user.",
+   "grounded": true
+  },
+  {
+   "claim": "The 10th result was published on Sep 16.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"readable_publish_date\":\"Sep 16\"",
+   "reason": "Matches tenth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 10th result has a 6 min read time.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"reading_time\":6",
+   "reason": "Matches tenth hit.",
+   "grounded": true
+  },
+  {
+   "claim": "The 10th result shows no reactions.",
+   "verdict": "UNPROVEN",
+   "request_index": 17,
+   "quote": "\"public_reactions_count\":0,\"featured\":false,\"published_at\":1789538473",
+   "reason": "downgraded: the judge cited [17] \"\\\"public_reactions_count\\\":0,\\\"featured\\\":fa\", which is not in that request",
+   "grounded": false
+  },
+  {
+   "claim": "The AI agent stated that most recent posts were published within the last two weeks, from Sep 16 to Sep 25, 2026.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"readable_publish_date\":\"Sep 25\"",
+   "reason": "Top ten hits' dates range from Sep 25 down to Sep 16, matching the stated range.",
+   "grounded": true
+  },
+  {
+   "claim": "The AI agent stated that reaction and comment counts were only displayed on a few articles.",
+   "verdict": "CONFIRMED",
+   "request_index": 17,
+   "quote": "\"public_reactions_count\":20",
+   "reason": "Only the 4th and 9th hits show nonzero reaction/comment counts among the top ten.",
+   "grounded": true
+  },
+  {
+   "claim": "The AI agent stated that the other articles showed \"Add Comment\" with no reaction count listed.",
+   "verdict": "UNPROVEN",
+   "request_index": null,
+   "quote": null,
+   "reason": "No evidence entry contains a UI text field for 'Add Comment' labeling."
+  }
+ ]
+}

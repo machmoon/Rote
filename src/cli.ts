@@ -44,6 +44,17 @@ async function main(a: string[]) {
   const [cmd, ...rest] = a;
   const flags = new Set(rest.filter((x) => x.startsWith("--")));
   const args = rest.filter((x) => !x.startsWith("--"));
+  const USAGE: Record<string, [number, string]> = {   // [required positional args, usage]
+    learn: [3, 'pilot learn <name> <url> "<query>" [--typer]'], call: [2, 'pilot call <name> "<query>"'],
+    swarm: [2, "pilot swarm <name> <file|q1 q2 ...>"], ask: [1, 'pilot ask "<question>"'], verify: [1, "pilot verify <name>"],
+    repair: [1, "pilot repair <name>"], custos: [1, 'pilot custos <name> "<claim>" ... | --summary'],
+  };
+  if (cmd && USAGE[cmd]) {
+    const [need, usage] = USAGE[cmd];
+    const missing = args.length < need || args.slice(0, need).some((x) => !x.trim())
+      || (cmd === "custos" && args.length < 2 && !flags.has("--summary"));
+    if (missing) { console.error(`usage: ${usage}`); process.exit(1); }
+  }
   switch (cmd) {
     case "learn": {
       const [name, url, query] = args;
@@ -119,7 +130,8 @@ async function main(a: string[]) {
     case "qm": { const r = qm(args[0]); console.log(`QM tool written to ${r.out} (${r.sites} sites). Copy it to <your-qm-deployment>/sandbox/tools/pilot/ and run \`qm up\`.`); break; }
     case "river": { const r = river(args[0]); console.log(`${r.kept.length} verified run(s) → ${r.out}${r.skipped.length ? dim(`\nleft out: ${r.skipped.join("; ")}`) : ""}`); break; }
     case "console": { const { serve } = await import("./server.ts"); serve(Number(args[0] ?? rest[rest.indexOf("--port") + 1]) || 4321); break; }
-    default: console.log(HELP);
+    case undefined: case "help": case "--help": case "-h": console.log(HELP); break;
+    default: console.error(red(`unknown command "${cmd}"`) + "\n\n" + HELP); process.exit(1);
   }
 }
 

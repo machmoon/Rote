@@ -46,11 +46,16 @@ test("call: results, timing, and tricky queries (quotes, unicode, &, $&, empty)"
     assert.ok(t.out.includes(`• ${q} result 1`), `${q}: ${t.out}`);
   }
   const e = await pilot("call", "fx", "");
-  assert.equal(e.code, 0, "empty query is a valid (empty-result) call");
+  assert.equal(e.code, 1, "an empty query is a usage error, not a counted call");
+  assert.match(e.err, /usage: pilot call/);
 });
 
 test("call: unknown / missing / path-like names are UNKNOWN_PILOT, exit 1", async () => {
-  for (const args of [["call", "nope", "x"], ["call"], ["call", "../x", "q"], ["verify", "nope"], ["custos", "nope", "claim"]]) {
+  const usage = await pilot("call");
+  assert.equal(usage.code, 1); assert.match(usage.err, /usage: pilot call/);
+  const unknown = await pilot("frobnicate");
+  assert.equal(unknown.code, 1); assert.match(unknown.err, /unknown command "frobnicate"/);
+  for (const args of [["call", "nope", "x"], ["call", "../x", "q"], ["verify", "nope"], ["custos", "nope", "claim"]]) {
     const r = await pilot(...args);
     assert.equal(r.code, 1, args.join(" "));
     assert.match(r.err, /UNKNOWN_PILOT/, args.join(" "));
@@ -66,7 +71,7 @@ test("swarm: one query, a file of 50, and none", async () => {
   assert.match(fifty.out, /50 searches in/);
   assert.equal(fifty.out.split("\n").filter((l) => / ms  /.test(l)).length, 50);
   const none = await pilot("swarm", "fx");
-  assert.equal(none.code, 1); assert.match(none.err, /INVALID_ARGUMENT/);
+  assert.equal(none.code, 1); assert.match(none.err, /usage: pilot swarm/);
 });
 
 test("custos --rules: verdicts printed and tallied from this run; no claims / no summary are INVALID_ARGUMENT", async () => {
@@ -78,7 +83,7 @@ test("custos --rules: verdicts printed and tallied from this run; no claims / no
   assert.match(r.out, /1 confirmed · 1 contradicted · 1 unproven/);
   assert.equal(JSON.parse(readFileSync(join(dir, "fx.claims.json"), "utf8")).verdicts.length, 3, "ad-hoc claims go to .claims.json");
   const none = await pilot("custos", "fx", "--rules");
-  assert.equal(none.code, 1); assert.match(none.err, /INVALID_ARGUMENT: no claims/);
+  assert.equal(none.code, 1); assert.match(none.err, /usage: pilot custos/);
   const nosum = await pilot("custos", "fx", "--summary");
   assert.equal(nosum.code, 1); assert.match(nosum.err, /INVALID_ARGUMENT: .*no agent summary/);
 });

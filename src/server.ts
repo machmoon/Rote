@@ -24,7 +24,7 @@ function state() {
   return names().map((n) => {
     const a = loadApi(n), cs = calls(n), rec = hasRecording(n) ? loadRecording(n) : null;
     return {
-      name: n, site: a.site, about: a.about ?? "", method: a.method, url: a.url, driver: a.driver, learned_query: a.learned_query,
+      name: n, site: a.site, about: a.about ?? "", method: a.method, url: a.url, body: a.body, driver: a.driver, learned_query: a.learned_query,
       browser_seconds: a.browser_seconds, requests_seen: a.requests_seen, learned_at: a.learned_at, verified: a.verified ?? null,
       calls: cs.length, avg_call_ms: cs.length ? cs.slice(-50).reduce((x, y) => x + y, 0) / Math.min(cs.length, 50) : null,
       saved_s: cs.reduce((t, ms) => t + a.browser_seconds - ms / 1000, 0), proof: status(n),
@@ -80,5 +80,9 @@ export function serve(port = 4321) {
       const err = toPilotError(e);
       json(res, err.code === "UNKNOWN_PILOT" || err.code === "INVALID_ARGUMENT" ? 400 : 502, { error: err.toJSON() });
     }
-  }).listen(port, () => console.log(`Pilot console on http://localhost:${port}`));
+  }).listen(port, () => {
+    console.log(`Pilot console on http://localhost:${port}`);
+    // warm TLS + keep-alive to every learned host so the first live call on stage isn't a cold handshake (not logged as a call)
+    for (const n of names()) { const a = loadApi(n); fetch(new URL(a.url).origin, { method: "HEAD", signal: AbortSignal.timeout(5000) }).catch(() => {}); }
+  });
 }
