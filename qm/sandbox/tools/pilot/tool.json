@@ -1,0 +1,45 @@
+{
+  "id": "pilot",
+  "label": "Pilot learned site APIs",
+  "advertise": "pilot",
+  "hints": [
+    "Pilot calls website search APIs that a teammate's agent already learned, in about a second, with no browser. Sites: devto (DEV Community), hn (Hacker News Search powered by Algolia), yc (The YC Startup Directory | Y Combinator).",
+    "When someone writes `@pilot <site> <question>` or asks you to search one of those sites, run `pilot call <site> \"<question>\"` and post its output (the top 5 results) as your answer. Don't open a browser for these sites.",
+    "`pilot list` shows the learned sites. Pilot is read-only: it only replays search requests."
+  ],
+  "egress": [
+    "45bwzj1sgc-dsn.algolia.net",
+    "prsobfp46h-3.algolianet.com",
+    "uj5wyc0l7x-dsn.algolia.net"
+  ],
+  "install": {
+    "binary": "pilot",
+    "files": [
+      {
+        "from": "pilot",
+        "to": "/usr/local/bin/pilot",
+        "mode": "0755"
+      },
+      {
+        "from": "call.mjs",
+        "to": "/usr/local/lib/pilot/call.mjs",
+        "mode": "0644"
+      },
+      {
+        "from": "devto.json",
+        "to": "/usr/local/lib/pilot/apis/devto.json",
+        "mode": "0644"
+      },
+      {
+        "from": "hn.json",
+        "to": "/usr/local/lib/pilot/apis/hn.json",
+        "mode": "0644"
+      },
+      {
+        "from": "yc.json",
+        "to": "/usr/local/lib/pilot/apis/yc.json",
+        "mode": "0644"
+      }
+    ]
+  }
+}

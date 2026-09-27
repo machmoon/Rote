@@ -1,0 +1,37 @@
+{
+ "name": "devto",
+ "site": "https://dev.to/",
+ "method": "POST",
+ "url": "https://prsobfp46h-3.algolianet.com/1/indexes/Article_production/query?x-algolia-agent=Algolia%20for%20JavaScript%20(4.23.3)%3B%20Browser%20(lite)&x-algolia-api-key=9aa7d31610cba78851c9b1f63776a9dd&x-algolia-application-id=PRSOBFP46H",
+ "body": "{\"query\":\"{query:raw}\",\"hitsPerPage\":\"60\",\"queryType\":\"prefixNone\",\"page\":\"0\"}",
+ "headers": {
+  "accept": "*/*",
+  "accept-language": "en-US,en;q=0.9",
+  "content-type": "application/x-www-form-urlencoded",
+  "origin": "https://dev.to",
+  "priority": "u=1, i",
+  "referer": "https://dev.to/",
+  "sec-ch-ua": "\"Google Chrome\";v=\"153\", \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"153\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-ch-ua-platform": "\"macOS\"",
+  "sec-fetch-dest": "empty",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-site": "cross-site",
+  "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36"
+ },
+ "learned_query": "claude code",
+ "driver": "claude",
+ "browser_seconds": 66.8,
+ "requests_seen": 19,
+ "learned_at": "2026-09-27 14:38",
+ "verified": {
+  "ok": true,
+  "checked_at": "2026-09-27 14:38",
+  "learned_query_results": 30,
+  "probe_query": "python",
+  "probe_results": 30,
+  "differs": true,
+  "problems": []
+ },
+ "about": "DEV Community — A space to discuss and keep up software development and manage your software career"
+}

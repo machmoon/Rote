@@ -102,7 +102,8 @@ const STOP = new Set(("a an and any are about at be best by can could do does do
   "latest list look looking me most my new newest of on or please popular recent say saying says search searching show some tell that the " +
   "their them there these this to top up what whats which who why with would you " +
   "post posts story stories article articles result results item items thread threads link links discussion discussions " +
-  "company companies startup startups video videos page pages site sites website websites directory api apis").split(" "));
+  "company companies startup startups video videos page pages site sites website websites directory api apis " +
+  "good great cool interesting building build built software tool tools app apps people someone anything things").split(" "));
 
 const norm = (w: string) => w.toLowerCase().replace(/[\u2019']s$/, "").replace(/[^a-z0-9+#.-]/g, "").replace(/^[.-]+|[.-]+$/g, "");
 

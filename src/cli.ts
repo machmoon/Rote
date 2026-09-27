@@ -32,7 +32,8 @@ ${dim("SHARE")}
   pilot pages                                    write every API + custos verdicts into GBrain (learn/custos do it too)
   pilot mcp                                      MCP server (stdio): pilot_list/call/ask/swarm/custos for any agent
   pilot qm [dir]                                 export a QM tool so @pilot answers in Slack
-  pilot river [out.jsonl]                        fine-tuning data from runs custos fully confirmed`;
+  pilot river [out.jsonl]                        fine-tuning data from runs custos fully confirmed
+  pilot memorable [names...] [--send] | recall "<task>"   Memorable procedure traces from verified runs (ingest with --send)`;
 
 const verdictLine = (v: any) => {
   const col = v.verdict === "CONFIRMED" ? green : v.verdict === "CONTRADICTED" ? red : grey;
@@ -121,7 +122,9 @@ async function main(a: string[]) {
     case "ask": {
       const qi = rest.indexOf("--query"), q = qi >= 0 ? rest[qi + 1] : undefined;
       const r = await ask(args.filter((x) => x !== q).join(" "), { query: q });
-      console.log(`${dim(`gbrain → ${r.route.hit.slug} (score ${r.route.hit.score.toFixed(2)}, ${Math.round(r.route_ms)} ms)`)}  ${bold(r.result.name)}(${amber(JSON.stringify(r.result.query))})  ${green(`${Math.round(r.result.ms)} ms`)}  ${dim(`custos ${r.confirmed} confirmed`)}`);
+      console.log(`${bold("GBrain")} ${dim(`searched team memory in ${Math.round(r.route_ms)} ms:`)}`);
+      r.route.hits.slice(0, 3).forEach((h, k) => console.log(`  ${k ? " " : green("→")} ${(k ? dim : bold)(h.slug.padEnd(22))} ${dim(`score ${h.score.toFixed(2)}`)}`));
+      console.log(`${bold("Pilot")} ${bold(r.result.name)}(${amber(JSON.stringify(r.result.query))})  ${green(`${Math.round(r.result.ms)} ms`)}  ${dim(`no browser · custos ${r.confirmed} confirmed`)}`);
       r.result.results.forEach((x) => console.log(`  • ${x.title.slice(0, 90)}  ${dim(x.detail)}`));
       break;
     }
@@ -129,6 +132,17 @@ async function main(a: string[]) {
     case "pages": for (const n of names()) console.log(await page(n)); break;
     case "qm": { const r = qm(args[0]); console.log(`QM tool written to ${r.out} (${r.sites} sites). Copy it to <your-qm-deployment>/sandbox/tools/pilot/ and run \`qm up\`.`); break; }
     case "river": { const r = river(args[0]); console.log(`${r.kept.length} verified run(s) → ${r.out}${r.skipped.length ? dim(`\nleft out: ${r.skipped.join("; ")}`) : ""}`); break; }
+    case "memorable": {
+      const m = await import("./memorable.ts");
+      if (args[0] === "recall") { if (!args[1]?.trim()) { console.error('usage: pilot memorable recall "<task>"'); process.exit(1); } console.log(m.recall(args[1])); break; }
+      const r = m.exportTraces(args, flags.has("--send"));
+      for (const k of r.kept) console.log(`  ${green("✓")} ${k.name.padEnd(8)} ${dim(k.file)}${k.sent ? `  ${k.sent}` : ""}`);
+      if (r.skipped.length) console.log(dim(`  left out: ${r.skipped.join("; ")}`));
+      console.log(r.linked === false
+        ? amber(`  not sent: Memorable isn't linked here. Run \`npx memorable-cli login && npx memorable-cli enable\`, then \`pilot memorable --send\`.`)
+        : r.sendRequested ? "" : dim(`  ${r.kept.length} trace(s) ready. \`pilot memorable --send\` ingests them into Memorable.`));
+      break;
+    }
     case "console": { const { serve } = await import("./server.ts"); serve(Number(args[0] ?? rest[rest.indexOf("--port") + 1]) || 4321); break; }
     case undefined: case "help": case "--help": case "-h": console.log(HELP); break;
     default: console.error(red(`unknown command "${cmd}"`) + "\n\n" + HELP); process.exit(1);
