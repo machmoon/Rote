@@ -7,6 +7,15 @@ import { type Api, type Verification, stamp } from "./store.ts";
 const PROBES = ["python", "robotics", "coffee", "startup"];
 
 export async function verify(api: Api): Promise<Verification> {
+  try {
+    return await check(api);
+  } catch (e) {
+    // a replay the site refuses is a failed verification, recorded, not a crash
+    return { ok: false, checked_at: stamp(), learned_query_results: 0, probe_query: "", probe_results: 0, differs: false, problems: [(e as Error).message] };
+  }
+}
+
+async function check(api: Api): Promise<Verification> {
   const problems: string[] = [];
   const a = await rawCall(api, api.learned_query);
   const ra = items(a.data, 30);

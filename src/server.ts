@@ -3,10 +3,11 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { custos } from "./custos.ts";
-import { toPilotError } from "./errors.ts";
+import { fail, toPilotError } from "./errors.ts";
 import { learn } from "./learn.ts";
 import { call, swarm } from "./replay.ts";
-import { page, status } from "./share.ts";
+import { status } from "./share.ts";
+import { ask, page } from "./gbrain.ts";
 import { ROOT, calls, hasRecording, loadApi, loadRecording, loadVerdicts, names, saveApi } from "./store.ts";
 import { verify } from "./validate.ts";
 
@@ -14,7 +15,10 @@ const json = (res: ServerResponse, code: number, body: unknown) => {
   res.writeHead(code, { "content-type": "application/json", "cache-control": "no-store" });
   res.end(JSON.stringify(body));
 };
-const readBody = async (req: IncomingMessage) => { let s = ""; for await (const c of req) s += c; return s ? JSON.parse(s) : {}; };
+const readBody = async (req: IncomingMessage) => {
+  let s = ""; for await (const c of req) s += c;
+  try { return s ? JSON.parse(s) : {}; } catch { throw fail("INVALID_ARGUMENT", "request body is not JSON"); }
+};
 
 function state() {
   return names().map((n) => {
@@ -47,6 +51,12 @@ export function serve(port = 4321) {
       if (u.pathname === "/api/call" && req.method === "POST") {
         const b = await readBody(req); const r = await call(b.name, b.query);
         return json(res, 200, { ...r, data: undefined, browser_seconds: loadApi(b.name).browser_seconds });
+      }
+      if (u.pathname === "/api/ask" && req.method === "POST") {   // GBrain picks the learned API, Pilot answers
+        const b = await readBody(req);
+        if (!b.question) throw fail("INVALID_ARGUMENT", "question is required");
+        const r = await ask(b.question);
+        return json(res, 200, { ...r, result: { ...r.result, data: undefined } });
       }
       if (u.pathname === "/api/swarm" && req.method === "POST") { const b = await readBody(req); return json(res, 200, await swarm(b.name, b.queries)); }
       if (u.pathname === "/api/custos" && req.method === "POST") {

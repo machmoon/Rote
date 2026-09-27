@@ -1,6 +1,6 @@
 {
  "name": "hn",
- "judged_at": "2026-09-27 21:21",
+ "judged_at": "2026-09-27 14:27",
  "claims_from": "claims",
  "judge": "llm",
  "requests": 11,
@@ -10,7 +10,7 @@
    "verdict": "CONFIRMED",
    "request_index": 10,
    "quote": "\"title\":\"Claude Code is steganographically marking requests\"",
-   "reason": "This is the first hit in the query results, confirming it as the top story.",
+   "reason": "This is the first hit in the search results the agent saw.",
    "grounded": true
   },
   {
@@ -18,7 +18,7 @@
    "verdict": "CONTRADICTED",
    "request_index": 10,
    "quote": "\"points\":2445",
-   "reason": "The recorded points value is 2445, not 2845.",
+   "reason": "Recorded points value is 2445, not 2845.",
    "grounded": true
   },
   {
@@ -26,7 +26,7 @@
    "verdict": "UNPROVEN",
    "request_index": null,
    "quote": null,
-   "reason": "No evidence of any email being sent."
+   "reason": "No email-sending request appears in the evidence log."
   }
  ]
 }
